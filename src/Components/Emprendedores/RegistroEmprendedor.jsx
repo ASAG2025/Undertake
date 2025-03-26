@@ -19,7 +19,7 @@ const RegistroEmprendedor = ({
             <Form.Label>Nombres</Form.Label>
             <Form.Control
               type="text"
-              name="nombre"
+              name="nombres"
               value={nuevoEmprendedor.nombres}
               onChange={handleInputChange}
               placeholder="Ingresa el nombre"
