@@ -4,8 +4,8 @@ import ProtectedRoute from "./Components/ProtectedRoute";
 import Login from './Views/Login'
 import Encabezado from "./Components/Encabezado";
 import Inicio from "./Views/Inicio";
-
 import './App.css'
+import Emprendedores from "./Views/Emprendedores";
 
 function App() {
 
@@ -20,6 +20,7 @@ function App() {
                 
                 <Route path="/" element={<Login />} />
                 <Route path="/inicio" element={<ProtectedRoute element={<Inicio />} />} />
+                <Route path="/Emprendedores" element={<ProtectedRoute element={<Emprendedores />} />}/> 
 
               </Routes>
             </main>
