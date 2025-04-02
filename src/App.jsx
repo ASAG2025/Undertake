@@ -6,6 +6,7 @@ import Encabezado from "./Components/Encabezado";
 import Inicio from "./Views/Inicio";
 import './App.css'
 import Emprendedores from "./Views/Emprendedores";
+import Financieras from "./Views/Financieras";
 
 function App() {
 
@@ -17,11 +18,10 @@ function App() {
             <Encabezado />
             <main>
               <Routes>
-                
                 <Route path="/" element={<Login />} />
                 <Route path="/inicio" element={<ProtectedRoute element={<Inicio />} />} />
                 <Route path="/Emprendedores" element={<ProtectedRoute element={<Emprendedores />} />}/> 
-
+                <Route path="/Financieras" element={<ProtectedRoute element={<Financieras />} />}/>
               </Routes>
             </main>
           </div>
