@@ -8,6 +8,7 @@ import './App.css'
 import Emprendedores from "./Views/Emprendedores";
 import Financieras from "./Views/Financieras";
 import Productos from "./Views/Productos"
+import Categorias from "./Views/Categorias";
 
 function App() {
 
