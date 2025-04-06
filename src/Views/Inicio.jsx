@@ -13,8 +13,7 @@ const Inicio = () => {
     <div>
       <br />
       <br />
-      <h1>Inicio</h1>
-      <button onClick={() => handleNavigate("/Emprendedores")} >Ir a Registros</button>
+      
     </div>
   )
 }
