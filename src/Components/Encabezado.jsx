@@ -49,7 +49,8 @@ const Encabezado = () => {
           <strong>Undertake</strong>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="offcanvasNavbar-expand-sm" onClick={handleToggle} />
-        <Navbar.Offcanvas
+        { isLoggedIn &&
+          <Navbar.Offcanvas
           id="offcanvasNavbar-expand-sm"
           aria-labelledby="offcanvasNavbarLabel-expand-sm"
           placement="end"
@@ -121,6 +122,7 @@ const Encabezado = () => {
             </Nav>
           </Offcanvas.Body>
         </Navbar.Offcanvas>
+        }
       </Container>
     </Navbar>
   );
