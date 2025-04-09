@@ -1,21 +1,60 @@
 import { useNavigate } from "react-router-dom";
+import { Container, Row, Col, Card, Button } from "react-bootstrap";
 
 const Inicio = () => {
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
-
-    // Función de navegación
-    const handleNavigate = (path) => {
-      navigate(path);
-    };
+  const handleNavigate = (path) => {
+    navigate(path);
+  };
 
   return (
-    <div>
-      <br />
-      <br />
-      
-    </div>
-  )
-}
+    <Container className="mt-5">
+      <h1 className="text-center fw-bold mb-4" style={{ fontSize: "2.5rem", color: "#2C3E50" }}>
+        Bienvenido a Underdake donde los emprendedores comienzan a construir su futuro. 💼
+      </h1>
+      <p className="text-center mb-5 text-muted">
+        Administra tus programas de financiamiento y registra tu usuario como emprendedor o financiera.
+      </p>
+
+      <Row className="g-4 justify-content-center">
+        <Col md={4}>
+          <Card className="shadow-sm border-0 h-100">
+            <Card.Body className="text-center">
+              <Card.Title>Programas 📋</Card.Title>
+              <Card.Text>Visualiza, crea y edita programas de financiamiento.</Card.Text>
+              <Button variant="success" onClick={() => handleNavigate("/programas")}>
+                Ir a Programas
+              </Button>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        <Col md={4}>
+          <Card className="shadow-sm border-0 h-100">
+            <Card.Body className="text-center">
+              <Card.Title>Instituciones 🏦</Card.Title>
+              <Card.Text>Administra tu institución financiera registrada.</Card.Text>
+              <Button variant="success" onClick={() => handleNavigate("/financieras")}>
+                Ver Instituciones
+              </Button>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={4}>
+          <Card className="shadow-sm border-0 h-100">
+            <Card.Body className="text-center">
+              <Card.Title>Emprendedores 👏</Card.Title>
+              <Card.Text>Administra tu usuario registrado.</Card.Text>
+              <Button variant="success" onClick={() => handleNavigate("/emprendedores")}>
+                Ver emprendedores
+              </Button>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
+  );
+};
 
 export default Inicio;
