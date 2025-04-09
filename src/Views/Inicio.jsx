@@ -1,5 +1,7 @@
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
+import "../Cards.css"; 
 
 const Inicio = () => {
   const navigate = useNavigate();
@@ -10,20 +12,22 @@ const Inicio = () => {
 
   return (
     <Container className="mt-5">
-      <h1 className="text-center fw-bold mb-4" style={{ fontSize: "2.5rem", color: "#2C3E50" }}>
-        Bienvenido a Underdake donde los emprendedores comienzan a construir su futuro. 💼
-      </h1>
-      <p className="text-center mb-5 text-muted">
-        Administra tus programas de financiamiento y registra tu usuario como emprendedor o financiera.
-      </p>
+      <div className="welcome-section text-center mb-5">
+        <h1 className="fw-bold mb-4 animated fadeIn" style={{ fontSize: "2.5rem", color: "#2C3E50" }}>
+          <span className="welcome-text">Bienvenido a Underdake</span> donde los emprendedores comienzan a construir su futuro. 💼
+        </h1>
+        <p className="fw-bold mb-5 animated fadeIn" style={{ fontSize: "1.5rem", color: "#2C3E50" }}>
+          <span className="welcome-text">Administra tus programas de financiamiento y registra tu usuario</span> como emprendedor o financiera.
+        </p>
+      </div>
 
       <Row className="g-4 justify-content-center">
         <Col md={4}>
-          <Card className="shadow-sm border-0 h-100">
+          <Card className="card shadow-sm border-0 h-100 blue">
             <Card.Body className="text-center">
               <Card.Title>Programas 📋</Card.Title>
               <Card.Text>Visualiza, crea y edita programas de financiamiento.</Card.Text>
-              <Button variant="success" onClick={() => handleNavigate("/programas")}>
+              <Button variant="success" className="card-button" onClick={() => handleNavigate("/programas")}>
                 Ir a Programas
               </Button>
             </Card.Body>
@@ -31,22 +35,23 @@ const Inicio = () => {
         </Col>
 
         <Col md={4}>
-          <Card className="shadow-sm border-0 h-100">
+          <Card className="card shadow-sm border-0 h-100 green">
             <Card.Body className="text-center">
               <Card.Title>Instituciones 🏦</Card.Title>
               <Card.Text>Administra tu institución financiera registrada.</Card.Text>
-              <Button variant="success" onClick={() => handleNavigate("/financieras")}>
+              <Button variant="success" className="card-button" onClick={() => handleNavigate("/financieras")}>
                 Ver Instituciones
               </Button>
             </Card.Body>
           </Card>
         </Col>
+
         <Col md={4}>
-          <Card className="shadow-sm border-0 h-100">
+          <Card className="card shadow-sm border-0 h-100 red">
             <Card.Body className="text-center">
               <Card.Title>Emprendedores 👏</Card.Title>
               <Card.Text>Administra tu usuario registrado.</Card.Text>
-              <Button variant="success" onClick={() => handleNavigate("/emprendedores")}>
+              <Button variant="success" className="card-button" onClick={() => handleNavigate("/emprendedores")}>
                 Ver emprendedores
               </Button>
             </Card.Body>
