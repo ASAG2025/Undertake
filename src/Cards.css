@@ -1,0 +1,56 @@
+.welcome-section {
+    background-color: #ffffff;
+    padding: 50px 0;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  h1 {
+    background: linear-gradient(to right, #9b59b6, #8e44ad);
+    -webkit-background-clip: text; /* Para Safari */
+    background-clip: text; /* Para navegadores modernos */
+    color: transparent;
+  }
+  
+  
+  .animated.fadeIn {
+    animation: fadeIn 2s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  .card {
+    border-radius: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card-title {
+    font-size: 1.5rem;
+    color: #6a4c9c;
+  }
+  
+  .card-text {
+    color: #7f5a8b;
+  }
+  
+  .card-button {
+    background-color: #9b59b6;
+    border: none;
+  }
+  
+  .card-button:hover {
+    background-color: #8e44ad;
+    border-color: #8e44ad;
+  }  
