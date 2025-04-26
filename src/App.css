@@ -7,5 +7,16 @@
     color: #005F2F !important;
   }
 
+  .color-navbar {
+    background-color: #b18cd7; /* tu color morado */
+    height: 60px; /* ALTURA FIJA del Navbar */
+    overflow: hidden; /* oculta cualquier cosa que se pase */
+  }
+
+  .logo-navbar {
+    height: 80px;
+    width: auto;
+    filter: brightness(0) invert(1);
+  }
   
   
