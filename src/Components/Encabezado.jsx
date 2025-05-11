@@ -95,9 +95,27 @@ const Encabezado = () => {
                   <strong>Programas</strong>
                 </Nav.Link>
 
-                {isLoggedIn && (
-                  <Nav.Link onClick={handleLogout} className={isCollapsed ? "text-black" : "text-white"}>
-                    Cerrar Sesión
+                <Nav.Link onClick={() => handleNavigate("/CardTaller")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                  <strong>Talleres</strong>
+                </Nav.Link>
+
+                <Nav.Link onClick={() => handleNavigate("/Reseñas")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                  <strong>Reseñas</strong>
+                </Nav.Link>
+
+
+                {isLoggedIn ? (
+                  <>
+                    <Nav.Link onClick={handleLogout} className={isCollapsed ? "text-black" : "text-white"}>
+                      Cerrar Sesión
+                    </Nav.Link>
+                  </>
+                ) : location.pathname === "/" && (
+                  <Nav.Link
+                    onClick={() => handleNavigate("/")}
+                    className={isCollapsed ? "text-black" : "text-white"}
+                  >
+                    Iniciar Sesión
                   </Nav.Link>
                 )}
 

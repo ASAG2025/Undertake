@@ -26,6 +26,7 @@ const Financieras = () => {
     Nombre_Institucion: "",
     Direccion: "",
     Contacto: "",
+    Imagen: null,
   });
   const [financieraEditada, setFinancieraEditada] = useState(null);
   const [financieraAEliminar, setFinancieraAEliminar] = useState(null);
@@ -68,6 +69,28 @@ const Financieras = () => {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if ( showEditModal) {
+          setFinancieraEditada((financieraEditada) => ({
+            ...financieraEditada,
+            Imagen: reader.result, 
+          }))
+        } else {
+          setNuevaFinanciera({
+            ...nuevaFinanciera,
+            Imagen: reader.result,
+          });
+        }
+      }
+      reader.readAsDataURL(file);
+    }
   };
 
   // Función para agregar una nueva financiera (CREATE)
@@ -150,6 +173,7 @@ const Financieras = () => {
         nuevaFinanciera={nuevaFinanciera}
         handleInputChange={handleInputChange}
         handleAddFinanciera={handleAddFinanciera}
+        handleFileChange={handleFileChange}
       />
       <EdicionFinanciera
         showEditModal={showEditModal}
@@ -157,6 +181,7 @@ const Financieras = () => {
         financieraEditada={financieraEditada}
         handleEditInputChange={handleEditInputChange}
         handleEditFinanciera={handleEditFinanciera}
+        handleFileChange={handleFileChange}
       />
       <EliminacionFinanciera
         showDeleteModal={showDeleteModal}
