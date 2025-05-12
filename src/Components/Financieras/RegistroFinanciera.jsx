@@ -7,6 +7,7 @@ const RegistroFinanciera = ({
   nuevaFinanciera,
   handleInputChange,
   handleAddFinanciera,
+  handleFileChange
 }) => {
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)}>
@@ -43,6 +44,14 @@ const RegistroFinanciera = ({
               value={nuevaFinanciera.Contacto}
               onChange={handleInputChange}
               placeholder="Ingresa el contacto"
+            />
+          </Form.Group>
+          <Form.Group controlId="formImagen">
+            <Form.Label>Imagen</Form.Label>
+            <Form.Control
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
             />
           </Form.Group>
         </Form>

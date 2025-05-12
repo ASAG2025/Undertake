@@ -10,10 +10,9 @@ import Financieras from "./Views/Financieras";
 import Productos from "./Views/Productos";
 import Categorias from "./Views/Categorias";
 import Programas from "./Views/Programas";
-import CardTaller from './Components/CardTaller/CardTaller';
+import CardTaller from './Components/CardTaller/CardTaller';// Importación agregada 
 
 
-// Importación agregada
 
 function App() {
   return (

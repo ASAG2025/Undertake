@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Button, Row, Col } from "react-bootstrap";
+import { Card, Button, Row, Col, Image } from "react-bootstrap";
 
 const CardsFinancieras = ({ financieras, openEditModal, openDeleteModal }) => {
   return (
@@ -15,6 +15,10 @@ const CardsFinancieras = ({ financieras, openEditModal, openDeleteModal }) => {
         >
           <Card className="h-100">
             <Card.Body>
+              { financiera.Imagen && (
+                <Image src={financiera.Imagen} width="100" height="100" />
+              )
+              }
               <Card.Title>{financiera.Nombre_Institucion}</Card.Title>
               <Card.Text>
                 <strong>Dirección:</strong> {financiera.Direccion}

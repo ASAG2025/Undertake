@@ -12,7 +12,7 @@ const Inicio = () => {
 
   return (
     <Container className="mt-5">
-      <div className="welcome-section text-center mb-5">
+      <div className="welcome-section text-center mb-5 px-4">
         <h1 className="fw-bold mb-4 animated fadeIn" style={{ fontSize: "2rem", color: "#2C3E50" }}>
           <span className="welcome-text">Bienvenido a Underdake</span> donde los emprendedores comienzan a construir su futuro. 💼
         </h1>

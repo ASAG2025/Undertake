@@ -7,6 +7,7 @@ const EdicionFinanciera = ({
   financieraEditada,
   handleEditInputChange,
   handleEditFinanciera,
+  handleFileChange
 }) => {
   if (!financieraEditada) return null;
 
@@ -45,6 +46,14 @@ const EdicionFinanciera = ({
               value={financieraEditada.Contacto}
               onChange={handleEditInputChange}
               placeholder="Ingresa el contacto"
+            />
+          </Form.Group>
+          <Form.Group controlId="formImagen">
+            <Form.Label>Imagen</Form.Label>
+            <Form.Control
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
             />
           </Form.Group>
         </Form>
