@@ -1,5 +1,5 @@
 import "./CardTaller.css";
-import { FaBook, FaTag, FaFilePdf } from "react-icons/fa";npm
+import { FaBook, FaTag, FaFilePdf } from "react-icons/fa";
 
 const coloresTags = {
     "Finanzas": "#4CAF50",
