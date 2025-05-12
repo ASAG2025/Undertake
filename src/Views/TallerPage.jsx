@@ -23,6 +23,7 @@ const TallerPage = () => {
                     descripcion={b.descripcion}
                     formato={b.formato}
                     link={b.link}
+                    video={b.video} // Aquí agregas la prop del video
                 />
             ))}
         </div>

@@ -9,7 +9,11 @@ import Emprendedores from "./Views/Emprendedores";
 import Financieras from "./Views/Financieras";
 import Productos from "./Views/Productos";
 import Categorias from "./Views/Categorias";
-import Programas from "./Views/Programas"; // Importación agregada
+import Programas from "./Views/Programas";
+import CardTaller from './Components/CardTaller/CardTaller';
+
+
+// Importación agregada
 
 function App() {
   return (
@@ -35,8 +39,8 @@ function App() {
                       imagen="https://tse1.mm.bing.net/th/id/OIP.jHBi_ibBabDxOOex7BuZaAHaES?w=800&h=464&rs=1&pid=ImgDetMain"
                       descripcion="Este es un taller te ayudará a comprender todo lo que necesites en Marketing"
                       formato="Web"
-                      link="https://www.udemy.com/course/learn-digital-marketing-course/?utm_source=bing&utm_medium=udemyads&utm_campaign=BG-Search_Keyword_Beta_Prof_la.EN_cc.ROW-English&campaigntype=Search&portfolio=Bing-ROW-English&language=EN&product=Course&test=&audience=Keyword&topic=Digital_Marketing&priority=Beta&utm_content=deal4584&utm_term=_._ag_1327112923143613_._ad__._kw_internet%20marketing_._de_c_._dm__._pl__._ti_kwd-82945677943038:loc-135_._li_152599_._pd__._&matchtype=p&msclkid=fcd283cfb35e173a5367ebc10cfceb83"
                       tags={["Finanzas"]}
+                      video="https://youtu.be/hgqRvnyjQak?si=BiWhjGLMNi-UnoYr"
                     />
                   } />
               </Routes>

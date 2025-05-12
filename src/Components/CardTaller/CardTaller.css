@@ -149,3 +149,9 @@
   text-decoration: underline;
   color: #0056b3;
 }
+
+.card-video {
+  width: 100%;
+  border-radius: 10px;
+  margin-top: 10px;
+}
