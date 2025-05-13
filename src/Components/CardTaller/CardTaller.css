@@ -155,3 +155,16 @@
   border-radius: 10px;
   margin-top: 10px;
 }
+
+.card-comentario {
+  margin-top: 1rem;
+}
+
+.comentario-textarea {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  resize: vertical;
+}

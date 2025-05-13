@@ -17,13 +17,13 @@ const TallerPage = () => {
             {talleres.map(b => (
                 <CardTaller
                     key={b.id}
+                    id={b.id}
                     titulo={b.titulo}
                     imagen={b.imagen}
                     tags={b.tags}
                     descripcion={b.descripcion}
                     formato={b.formato}
-                    link={b.link}
-                    video={b.video} // Aquí agregas la prop del video
+                    video={b.video}
                 />
             ))}
         </div>

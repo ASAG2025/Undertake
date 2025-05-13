@@ -10,8 +10,7 @@ import Financieras from "./Views/Financieras";
 import Productos from "./Views/Productos";
 import Categorias from "./Views/Categorias";
 import Programas from "./Views/Programas";
-import CardTaller from './Components/CardTaller/CardTaller';// Importación agregada 
-
+import CardTaller from './Components/CardTaller/CardTaller';// Importación agregad
 
 
 function App() {
@@ -37,8 +36,7 @@ function App() {
                       titulo="Taller de Marketing"
                       imagen="https://tse1.mm.bing.net/th/id/OIP.jHBi_ibBabDxOOex7BuZaAHaES?w=800&h=464&rs=1&pid=ImgDetMain"
                       descripcion="Este es un taller te ayudará a comprender todo lo que necesites en Marketing"
-                      formato="Web"
-                      tags={["Finanzas"]}
+                      tags={["Marketing en Redes"]}
                       video="https://youtu.be/hgqRvnyjQak?si=BiWhjGLMNi-UnoYr"
                     />
                   } />
