@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Button } from "react-bootstrap";
+import { Container, Button, Row, Col } from "react-bootstrap";
 import { db } from "../Database/FirebaseConfig";
 import {
   collection,
@@ -9,16 +9,28 @@ import {
   deleteDoc,
   doc,
 } from "firebase/firestore";
-// Importaciones de componentes personalizados
-import CardsFinancieras from "../Components/Financieras/CardsFinancieras"; // Modificado
+
+import CardsFinancieras from "../Components/Financieras/CardsFinancieras";
 import RegistroFinanciera from "../Components/Financieras/RegistroFinanciera";
 import EdicionFinanciera from "../Components/Financieras/EdicionFinanciera";
 import EliminacionFinanciera from "../Components/Financieras/EliminacionFinanciera";
+import CuadroBusqueda from "../Components/Busqueda/CuadroBusquedas";
+import Paginacion from "../Components/Ordenamiento/Paginacion";
 
 const Financieras = () => {
-  
-  // Estados para manejo de datos
   const [financieras, setFinancieras] = useState([]);
+  const [financierasFiltradas, setFinancierasFiltradas] = useState([]);
+  const [searchText, setSearchText] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
+  const [offlineChanges, setOfflineChanges] = useState({
+    added: [],
+    updated: [],
+    deleted: [],
+  });
+
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -31,29 +43,52 @@ const Financieras = () => {
   const [financieraEditada, setFinancieraEditada] = useState(null);
   const [financieraAEliminar, setFinancieraAEliminar] = useState(null);
 
-  // Referencia a la colección de financieras en Firestore
   const financieraCollection = collection(db, "Financiera");
 
-  // Función para obtener todas las financieras de Firestore
   const fetchFinancieras = async () => {
     try {
       const data = await getDocs(financieraCollection);
-      const fetchedFinancieras = data.docs.map((doc) => ({
+      const fetched = data.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       }));
-      setFinancieras(fetchedFinancieras);
+      setFinancieras(fetched);
+      setFinancierasFiltradas(fetched);
     } catch (error) {
-      console.error("Error al obtener las financieras:", error);
+      if (isOffline) {
+        console.warn("Sin conexión. No se puede cargar.");
+      } else {
+        console.error("Error al obtener financieras:", error);
+      }
     }
   };
 
-  // Hook useEffect para carga inicial de datos
   useEffect(() => {
     fetchFinancieras();
+
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
   }, []);
 
-  // Manejador de cambios en inputs del formulario de nueva financiera
+  const handleSearchChange = (e) => {
+    const text = e.target.value.toLowerCase();
+    setSearchText(text);
+    const filtradas = financieras.filter((fin) =>
+      fin.Nombre_Institucion.toLowerCase().includes(text) ||
+      fin.Contacto.toLowerCase().includes(text) ||
+      fin.Direccion.toLowerCase().includes(text)
+    );
+    setFinancierasFiltradas(filtradas);
+    setCurrentPage(1);
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNuevaFinanciera((prev) => ({
@@ -62,7 +97,6 @@ const Financieras = () => {
     }));
   };
 
-  // Manejador de cambios en inputs del formulario de edición
   const handleEditInputChange = (e) => {
     const { name, value } = e.target;
     setFinancieraEditada((prev) => ({
@@ -73,100 +107,163 @@ const Financieras = () => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if ( showEditModal) {
-          setFinancieraEditada((financieraEditada) => ({
-            ...financieraEditada,
-            Imagen: reader.result, 
-          }))
-        } else {
-          setNuevaFinanciera({
-            ...nuevaFinanciera,
-            Imagen: reader.result,
-          });
-        }
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (showEditModal) {
+        setFinancieraEditada((prev) => ({
+          ...prev,
+          Imagen: reader.result,
+        }));
+      } else {
+        setNuevaFinanciera((prev) => ({
+          ...prev,
+          Imagen: reader.result,
+        }));
       }
-      reader.readAsDataURL(file);
-    }
+    };
+    if (file) reader.readAsDataURL(file);
   };
 
-  // Función para agregar una nueva financiera (CREATE)
   const handleAddFinanciera = async () => {
     if (!nuevaFinanciera.Nombre_Institucion || !nuevaFinanciera.Direccion || !nuevaFinanciera.Contacto) {
-      alert("Por favor, completa todos los campos antes de guardar.");
+      alert("Completa todos los campos.");
       return;
     }
+
+    if (isOffline) {
+      const tempId = `temp_${Date.now()}`;
+      const financieraConId = { ...nuevaFinanciera, id: tempId };
+      setOfflineChanges((prev) => ({
+        ...prev,
+        added: [...prev.added, financieraConId],
+      }));
+      setFinancieras((prev) => [...prev, financieraConId]);
+      setFinancierasFiltradas((prev) => [...prev, financieraConId]);
+      alert("Estás offline. Se guardará localmente.");
+      setShowModal(false);
+      return;
+    }
+
     try {
       await addDoc(financieraCollection, nuevaFinanciera);
-      alert('Financiera agregada correctamente.');
+      alert("Financiera agregada.");
       setShowModal(false);
-      setNuevaFinanciera({ Nombre_Institucion: "", Direccion: "", Contacto: "" });
       await fetchFinancieras();
     } catch (error) {
-      console.error("Error al agregar la financiera:", error);
+      console.error("Error al agregar financiera:", error);
     }
   };
 
-  // Función para actualizar una financiera existente (UPDATE)
   const handleEditFinanciera = async () => {
     if (!financieraEditada.Nombre_Institucion || !financieraEditada.Direccion || !financieraEditada.Contacto) {
-      alert("Por favor, completa todos los campos antes de actualizar.");
+      alert("Completa todos los campos.");
       return;
     }
+
+    if (isOffline) {
+      setOfflineChanges((prev) => ({
+        ...prev,
+        updated: [...prev.updated, { id: financieraEditada.id, data: financieraEditada }],
+      }));
+      setFinancieras((prev) =>
+        prev.map((f) => (f.id === financieraEditada.id ? financieraEditada : f))
+      );
+      setFinancierasFiltradas((prev) =>
+        prev.map((f) => (f.id === financieraEditada.id ? financieraEditada : f))
+      );
+      alert("Estás offline. Cambios guardados localmente.");
+      setShowEditModal(false);
+      return;
+    }
+
     try {
       const financieraRef = doc(db, "Financiera", financieraEditada.id);
-      alert("Datos actualizado correctamente");
       await updateDoc(financieraRef, financieraEditada);
+      alert("Actualizado correctamente.");
       setShowEditModal(false);
       await fetchFinancieras();
     } catch (error) {
-      console.error("Error al actualizar la financiera:", error);
+      console.error("Error al actualizar:", error);
     }
   };
 
-  // Función para eliminar una financiera (DELETE)
   const handleDeleteFinanciera = async () => {
-    if (financieraAEliminar) {
-      try {
-        const financieraRef = doc(db, "Financiera", financieraAEliminar.id);
-        alert("Financiera eliminada correctamente");
-        await deleteDoc(financieraRef);
-        setShowDeleteModal(false);
-        await fetchFinancieras();
-      } catch (error) {
-        console.error("Error al eliminar la financiera:", error);
-      }
+    if (!financieraAEliminar) return;
+
+    if (isOffline) {
+      setOfflineChanges((prev) => ({
+        ...prev,
+        deleted: [...prev.deleted, financieraAEliminar.id],
+      }));
+      setFinancieras((prev) => prev.filter((f) => f.id !== financieraAEliminar.id));
+      setFinancierasFiltradas((prev) => prev.filter((f) => f.id !== financieraAEliminar.id));
+      alert("Estás offline. Eliminación guardada localmente.");
+      setShowDeleteModal(false);
+      return;
+    }
+
+    try {
+      const financieraRef = doc(db, "Financiera", financieraAEliminar.id);
+      await deleteDoc(financieraRef);
+      alert("Eliminado correctamente.");
+      setShowDeleteModal(false);
+      await fetchFinancieras();
+    } catch (error) {
+      console.error("Error al eliminar:", error);
     }
   };
 
-  // Función para abrir el modal de edición con datos prellenados
   const openEditModal = (financiera) => {
-    setFinancieraEditada({ ...financiera });
+    setFinancieraEditada(financiera);
     setShowEditModal(true);
   };
 
-  // Función para abrir el modal de eliminación
   const openDeleteModal = (financiera) => {
     setFinancieraAEliminar(financiera);
     setShowDeleteModal(true);
   };
 
-  // Renderizado del componente
+  const paginatedFinancieras = financierasFiltradas.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   return (
     <Container className="mt-5">
+      {isOffline && (
+        <div className="alert alert-warning text-center">
+          ⚠ Estás sin conexión. Los cambios se guardarán localmente.
+        </div>
+      )}
+
       <br />
       <h4>Gestión de Financieras</h4>
-      <Button className="mb-3" onClick={() => setShowModal(true)}>
-        Agregar financiera
-      </Button>
+
+      <Row>
+         <Col lg={2}>
+           <Button className="mb-3" onClick={() => setShowModal(true)} style={{ width: "100%" }}>
+             <i className="bi bi-plus-circle me-2"></i>
+             Agregar
+           </Button>
+         </Col>
+         <Col lg={3}>
+           <CuadroBusqueda searchText={searchText} handleSearchChange={handleSearchChange} />
+         </Col>
+       </Row>
+       
       <CardsFinancieras
-        financieras={financieras}
+        financieras={paginatedFinancieras}
         openEditModal={openEditModal}
         openDeleteModal={openDeleteModal}
       />
+
+      <Paginacion
+        itemsPerPage={itemsPerPage}
+        totalItems={financierasFiltradas.length}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+      />
+
       <RegistroFinanciera
         showModal={showModal}
         setShowModal={setShowModal}
@@ -175,6 +272,7 @@ const Financieras = () => {
         handleAddFinanciera={handleAddFinanciera}
         handleFileChange={handleFileChange}
       />
+
       <EdicionFinanciera
         showEditModal={showEditModal}
         setShowEditModal={setShowEditModal}
@@ -183,6 +281,7 @@ const Financieras = () => {
         handleEditFinanciera={handleEditFinanciera}
         handleFileChange={handleFileChange}
       />
+
       <EliminacionFinanciera
         showDeleteModal={showDeleteModal}
         setShowDeleteModal={setShowDeleteModal}

@@ -7,10 +7,10 @@ const CardsFinancieras = ({ financieras, openEditModal, openDeleteModal }) => {
       {financieras.map((financiera) => (
         <Col
           key={financiera.id}
-          xs={6}  
-          sm={6}  
-          md={4}  
-          lg={3}  
+          xs={12}
+          sm={12}
+          md={6}
+          lg={4}
           className="mb-3"
         >
           <Card className="h-100">

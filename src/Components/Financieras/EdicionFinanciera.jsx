@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, Form, Button, Row, Col, InputGroup, Row, Col } from "react-bootstrap";
+import { Modal, Form, Button, InputGroup, Row, Col } from "react-bootstrap";
 
 const EdicionFinanciera = ({
   showEditModal,

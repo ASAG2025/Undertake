@@ -155,25 +155,21 @@ const Programas = () => {
         </div>
       )}
 
+      <br/>
+
       <h4>Gestión de Programas de Financiamiento</h4>
 
-      {/* Botón primero */}
-      <div className="mb-3">
-        <Button onClick={() => {
-          setProgramaEditado(null);
-          setShowModal(true);
-        }}>
-          Agregar programa
-        </Button>
-      </div>
-
-      {/* Cuadro de búsqueda debajo del botón */}
-      <div className="mb-4">
-        <CuadroBusqueda
-          searchText={searchText}
-          handleSearchChange={handleSearchChange}
-        />
-      </div>
+      <Row>
+        <Col lg={2}>
+          <Button className="mb-3" onClick={() => setShowModal(true)} style={{ width: "100%" }}>
+            <i className="bi bi-plus-circle me-2"></i>
+            Agregar
+          </Button>
+        </Col>
+        <Col lg={3}>
+          <CuadroBusqueda searchText={searchText} handleSearchChange={handleSearchChange} />
+        </Col>
+      </Row>
 
       <ProgramasFinanciamiento
         programas={paginatedProgramas}

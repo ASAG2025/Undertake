@@ -32,6 +32,9 @@ const ProgramasFinanciamiento = ({ programas, onEditar, onEliminar }) => {
               <Card.Text>
                 <strong>Fecha de Fin:</strong> {programa.Fecha_Fin}
               </Card.Text>
+              <Card.Text>
+                <strong>Descripción:</strong> {programa.Descripcion}
+              </Card.Text>
             </Card.Body>
             <Card.Footer className="d-flex justify-content-center" style={{ gap: '10px' }}>
               <Button
