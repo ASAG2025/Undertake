@@ -54,3 +54,29 @@
     background-color: #8e44ad;
     border-color: #8e44ad;
   }  
+  
+  /*Inicio*/
+  .text-3d {
+  color: #00796b;
+  text-shadow: 2px 2px 0 #ffffff, 4px 4px 0 #b2dfdb;
+  font-weight: 900;
+  animation: popIn 1s ease-out;
+}
+
+.typing {
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 2px solid #004d40;
+  animation: blink-caret 0.75s step-end infinite;
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

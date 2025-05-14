@@ -42,7 +42,7 @@
   font-family: "Georgia", serif;
 }
 
-.card-title::after {
+/*.card-title::after {
   content: "";
   display: block;
   width: 160px;
@@ -50,7 +50,7 @@
   background: #2c3e50;
   margin: 6px auto 0;
   border-radius: 2px;
-}
+}*/
 
 .card-descripcion {
   font-size: 0.87rem;

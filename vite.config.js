@@ -4,12 +4,13 @@ import { VitePWA } from "vite-plugin-pwa";
 
 // https://vite.dev/config/
 export default defineConfig({
+
   plugins: [
     react(),
     VitePWA({
       registerType: "autoUpdate",
       includeAssets: [
-        "ferreteria_selva_logo.png",
+        "LogoUndertake.png",
         "icons/icon-192x192.png",
         "icons/icon-512x512",
       ],
