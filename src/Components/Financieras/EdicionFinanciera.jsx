@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, Form, Button, Row, Col, InputGroup } from "react-bootstrap";
+import { Modal, Form, Button, Row, Col, InputGroup, Row, Col } from "react-bootstrap";
 
 const EdicionFinanciera = ({
   showEditModal,
@@ -12,9 +12,9 @@ const EdicionFinanciera = ({
   if (!financieraEditada) return null;
 
   return (
-    <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+    <Modal show={showEditModal} onHide={() => setShowEditModal(false)} size="lg">
       <Modal.Header closeButton>
-        <Modal.Title>Editar Financiera</Modal.Title>
+        <Modal.Title>Editar Institución Financiera</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>

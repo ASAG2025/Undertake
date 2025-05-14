@@ -64,7 +64,11 @@ const FormularioPrograma = ({ show, onHide, onGuardar, modoEdicion, programa }) 
     if (!formData.Interes) newErrors.Interes = "El interés es obligatorio.";
     if (!formData.Fecha_Inicio) newErrors.Fecha_Inicio = "La fecha de inicio es obligatoria.";
     if (!formData.Fecha_Fin) newErrors.Fecha_Fin = "La fecha de fin es obligatoria.";
-    if (!formData.Descripcion) newErrors.Descripcion = "La descripción es obligatoria.";
+    if (formData.Fecha_Inicio && formData.Fecha_Fin && formData.Fecha_Inicio > formData.Fecha_Fin) {
+      newErrors.Fecha_Fin = "La fecha de fin no puede ser anterior a la de inicio.";
+    }
+
+    if (!formData.Descripcion.trim()) newErrors.Descripcion = "La descripción es obligatoria.";
     if (!formData.Imagen && !modoEdicion) newErrors.Imagen = "La imagen es obligatoria.";
 
     if (Object.keys(newErrors).length > 0) {
@@ -76,13 +80,14 @@ const FormularioPrograma = ({ show, onHide, onGuardar, modoEdicion, programa }) 
     const programaFinal = {
       ...formData,
       Monto_Maximo: parseFloat(formData.Monto_Maximo),
+      Interes: parseFloat(formData.Interes),
     };
 
     modoEdicion ? onGuardar(idPrograma, programaFinal) : onGuardar(programaFinal);
   };
 
   return (
-    <Modal show={show} onHide={onHide}>
+    <Modal show={show} onHide={onHide} size="lg">
       <Modal.Header closeButton>
         <Modal.Title>{modoEdicion ? "Editar Programa" : "Nuevo Programa"}</Modal.Title>
       </Modal.Header>

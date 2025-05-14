@@ -9,8 +9,49 @@ const RegistroFinanciera = ({
   handleFileChange,
   handleAddFinanciera,
 }) => {
+  const [errors, setErrors] = useState({
+    Nombre_Institucion: "",
+    Direccion: "",
+    Contacto: "",
+    Imagen: "",
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const newErrors = {};
+
+    // Validaciones
+    if (!nuevaFinanciera.Nombre_Institucion.trim()) {
+      newErrors.Nombre_Institucion = "El nombre de la institución es obligatorio.";
+    }
+
+    if (!nuevaFinanciera.Direccion.trim()) {
+      newErrors.Direccion = "La dirección es obligatoria.";
+    }
+
+    // Validación del campo Contacto: solo acepta exactamente 8 dígitos
+    const telefonoRegex = /^\d{8}$/; // Solo acepta exactamente 8 dígitos
+    if (!nuevaFinanciera.Contacto.trim()) {
+      newErrors.Contacto = "El contacto es obligatorio.";
+    } else if (!telefonoRegex.test(nuevaFinanciera.Contacto)) {
+      newErrors.Contacto = "El contacto debe ser un número de teléfono válido de 8 dígitos.";
+    }
+
+    if (!nuevaFinanciera.Imagen) {
+      newErrors.Imagen = "La imagen es obligatoria.";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    // Llamada a la función de agregar la financiera
+    handleAddFinanciera();
+  };
+
   return (
-    <Modal show={showModal} onHide={() => setShowModal(false)}>
+    <Modal show={showModal} onHide={() => setShowModal(false)} size="lg">
       <Modal.Header closeButton>
         <Modal.Title>Agregar Institución Financiera</Modal.Title>
       </Modal.Header>

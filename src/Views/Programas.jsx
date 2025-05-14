@@ -8,52 +8,63 @@ import {
   updateDoc,
   deleteDoc,
   doc,
-  query,
-  where,
 } from "firebase/firestore";
-import { useAuth } from "../Database/AuthContext";
-import { storage } from "../Database/FirebaseConfig";
-import {
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-} from "firebase/storage";
 
+// Importaciones de componentes personalizados
 import ProgramasFinanciamiento from "../Components/Financieras/ProgramasFinanciamiento";
 import FormularioPrograma from "../Components/Financieras/FormularioPrograma";
-import CuadroBusquedas from "../Components/Busqueda/CuadroBusquedas";
+import CuadroBusqueda from "../Components/Busqueda/CuadroBusquedas";
+import Paginacion from "../Components/Ordenamiento/Paginacion";
 
 const Programas = () => {
-  const { user } = useAuth();
   const [programas, setProgramas] = useState([]);
-  const [programasFiltrados, setProgramasFiltrados] = useState([]);
-  const [searchText, setSearchText] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [modoEdicion, setModoEdicion] = useState(false);
-  const [programaActual, setProgramaActual] = useState(null);
+  const [programaEditado, setProgramaEditado] = useState(null);
+  const [searchText, setSearchText] = useState("");
+  const [programasFiltrados, setProgramasFiltrados] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
+  const [offlineChanges, setOfflineChanges] = useState({
+    added: [],
+    updated: [],
+    deleted: [],
+  });
 
   const programasRef = collection(db, "programas_financiamiento");
 
   const obtenerProgramas = async () => {
     try {
-      const q = query(programasRef, where("uid_financiera", "==", user.uid));
-      const data = await getDocs(q);
-      const resultados = data.docs.map((doc) => ({
+      const data = await getDocs(programasRef);
+      const fetchedProgramas = data.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       }));
-      setProgramas(resultados);
-      setProgramasFiltrados(resultados);
+      setProgramas(fetchedProgramas);
+      setProgramasFiltrados(fetchedProgramas);
     } catch (error) {
-      console.error("Error al cargar programas:", error);
+      if (isOffline) {
+        console.warn("Sin conexión. No se pueden cargar datos nuevos.");
+      } else {
+        console.error("Error al obtener los programas:", error);
+      }
     }
   };
 
   useEffect(() => {
-    if (user?.uid) {
-      obtenerProgramas();
-    }
-  }, [user]);
+    obtenerProgramas();
+
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
 
   const handleSearchChange = (e) => {
     const text = e.target.value.toLowerCase();
@@ -66,118 +77,126 @@ const Programas = () => {
     setProgramasFiltrados(filtrados);
   };
 
-  const abrirModalNuevo = () => {
-    setProgramaActual(null);
-    setModoEdicion(false);
-    setShowModal(true);
-  };
-
-  const subirImagen = async (imagen) => {
-    const storageRef = ref(storage, "programas/" + imagen.name);
-    const uploadTask = uploadBytesResumable(storageRef, imagen);
-
-    return new Promise((resolve, reject) => {
-      uploadTask.on(
-        "state_changed",
-        () => {},
-        (error) => reject(error),
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then(resolve);
-        }
-      );
-    });
-  };
-
-  const guardarPrograma = async (programa) => {
-    if (
-      !programa.Nombre_Programa ||
-      !programa.Monto_Maximo ||
-      !programa.Interes ||
-      !programa.Fecha_Inicio ||
-      !programa.Fecha_Fin
-    ) {
-      console.error("Faltan datos para agregar el programa");
+  const handleAddPrograma = async (programa) => {
+    if (!programa.Nombre_Programa || !programa.Monto_Maximo || !programa.Interes) {
+      alert("Por favor, completa todos los campos antes de guardar.");
       return;
     }
 
+    if (isOffline) {
+      const tempId = `temp_${Date.now()}`;
+      const programaConId = { ...programa, id: tempId };
+      setOfflineChanges((prev) => ({
+        ...prev,
+        added: [...prev.added, programaConId],
+      }));
+      alert("Estás offline. El cambio se guardará cuando te conectes.");
+    }
+
     try {
-      let imagenUrl = "";
-      if (programa.Imagen) {
-        imagenUrl = await subirImagen(programa.Imagen);
-      }
-
-      const nuevoPrograma = {
-        ...programa,
-        uid_financiera: user.uid,
-        Monto_Maximo: parseFloat(programa.Monto_Maximo),
-        Imagen: imagenUrl,
-      };
-
-      await addDoc(programasRef, nuevoPrograma);
+      await addDoc(programasRef, programa);
+      alert('Programa agregado correctamente.');
       setShowModal(false);
-      obtenerProgramas();
+      await obtenerProgramas();
     } catch (error) {
-      console.error("Error al agregar:", error);
+      console.error("Error al agregar el programa:", error);
     }
   };
 
-  const actualizarPrograma = async (id, datosActualizados) => {
+  const handleEditPrograma = async (programa) => {
+    if (!programa.Nombre_Programa || !programa.Monto_Maximo || !programa.Interes) {
+      alert("Por favor, completa todos los campos antes de actualizar.");
+      return;
+    }
+
+    if (isOffline) {
+      setOfflineChanges((prev) => ({
+        ...prev,
+        updated: [
+          ...prev.updated,
+          { id: programa.id, data: programa },
+        ],
+      }));
+      alert("Estás offline. El cambio se guardará cuando te conectes.");
+    }
+
     try {
-      const programaRef = doc(db, "programas_financiamiento", id);
-      await updateDoc(programaRef, datosActualizados);
+      const programaRef = doc(db, "programas_financiamiento", programa.id);
+      await updateDoc(programaRef, programa);
+      setProgramaEditado(null);
       setShowModal(false);
-      obtenerProgramas();
+      await obtenerProgramas();
     } catch (error) {
-      console.error("Error al actualizar:", error);
+      console.error("Error al actualizar el programa:", error);
     }
   };
 
-  const eliminarPrograma = async (id) => {
+  const handleDeletePrograma = async (programa) => {
     try {
-      const refPrograma = doc(db, "programas_financiamiento", id);
-      await deleteDoc(refPrograma);
-      obtenerProgramas();
+      const programaRef = doc(db, "programas_financiamiento", programa.id);
+      await deleteDoc(programaRef);
+      alert("Programa eliminado correctamente.");
+      await obtenerProgramas();
     } catch (error) {
-      console.error("Error al eliminar:", error);
+      console.error("Error al eliminar el programa:", error);
     }
   };
 
-  const editarPrograma = (programa) => {
-    setProgramaActual(programa);
-    setModoEdicion(true);
-    setShowModal(true);
-  };
+  const paginatedProgramas = programasFiltrados.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <Container className="mt-5">
-      <br />
+      {isOffline && (
+        <div className="alert alert-warning text-center" role="alert">
+          ⚠ Estás sin conexión. Los cambios se guardarán localmente y se sincronizarán automáticamente al volver a estar en línea.
+        </div>
+      )}
+
       <h4>Gestión de Programas de Financiamiento</h4>
-      <Row>
-      <Col lg={2} md={2} sm={2} xs={3}>
-      <Button className="mb-3" onClick={abrirModalNuevo} style={{width:"100%"}}>
-        <i className="bi bi-plus-circle me-2"></i>
-        Agregar
-      </Button>
-      </Col>
-      <Col lg={3} md={3} sm={3} xs={5}>
-      <CuadroBusquedas
-        searchText={searchText}
-        handleSearchChange={handleSearchChange}
-      />
-    </Col>
-      </Row>
+
+      {/* Botón primero */}
+      <div className="mb-3">
+        <Button onClick={() => {
+          setProgramaEditado(null);
+          setShowModal(true);
+        }}>
+          Agregar programa
+        </Button>
+      </div>
+
+      {/* Cuadro de búsqueda debajo del botón */}
+      <div className="mb-4">
+        <CuadroBusqueda
+          searchText={searchText}
+          handleSearchChange={handleSearchChange}
+        />
+      </div>
+
       <ProgramasFinanciamiento
-        programas={programasFiltrados}
-        onEditar={editarPrograma}
-        onEliminar={eliminarPrograma}
+        programas={paginatedProgramas}
+        onEditar={(programa) => {
+          setProgramaEditado(programa);
+          setShowModal(true);
+        }}
+        onEliminar={handleDeletePrograma}
+      />
+
+      <Paginacion
+        itemsPerPage={itemsPerPage}
+        totalItems={programasFiltrados.length}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
       />
 
       <FormularioPrograma
         show={showModal}
         onHide={() => setShowModal(false)}
-        onGuardar={modoEdicion ? actualizarPrograma : guardarPrograma}
-        modoEdicion={modoEdicion}
-        programa={programaActual}
+        onGuardar={handleAddPrograma}
+        programa={programaEditado}
+        onGuardarEdicion={handleEditPrograma}
       />
     </Container>
   );
