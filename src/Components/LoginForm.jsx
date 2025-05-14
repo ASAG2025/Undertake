@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, Form, Button, Card, Alert } from "react-bootstrap";
+import { Row, Col, Form, Button, Card, Alert, InputGroup } from "react-bootstrap";
 import "../App.css";
 
 const LoginForm = ({ email, password, error, setEmail, setPassword, handleSubmit }) => {
@@ -12,25 +12,31 @@ const LoginForm = ({ email, password, error, setEmail, setPassword, handleSubmit
             {error && <Alert variant="danger">{error}</Alert>}
             <Form onSubmit={handleSubmit}>
               <Form.Group className="mb-3" controlId="emailUsuario">
-                <Form.Label>Correo Electrónico</Form.Label>
+                
+                <InputGroup>
+                <InputGroup.Text><i className="bi bi-lock" /></InputGroup.Text>
                 <Form.Control
                   type="email"
-                  placeholder="Ingresa tu correo"
+                  placeholder="Correo"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 />
+                </InputGroup>
               </Form.Group>
 
               <Form.Group className="mb-3" controlId="contraseñaUsuario">
-                <Form.Label>Contraseña</Form.Label>
+              
+                <InputGroup>
+                <InputGroup.Text><i className="bi bi-envelope" /></InputGroup.Text>
                 <Form.Control
                   type="password"
-                  placeholder="Ingresa tu contraseña"
+                  placeholder="Contraseña"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
+                </InputGroup>
               </Form.Group>
 
               <Button variant="primary" type="submit" className="w-100">

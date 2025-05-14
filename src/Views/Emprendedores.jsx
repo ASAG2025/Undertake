@@ -1,96 +1,184 @@
 import React, { useState, useEffect } from "react";
-import { Container, Button } from "react-bootstrap";
+import { Container, Button, Col, Row } from "react-bootstrap";
 import { db } from "../Database/FirebaseConfig";
+import { getAuth, createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from "firebase/auth";
+
 import {
   collection,
   getDocs,
-  addDoc,
+  setDoc,
   updateDoc,
   deleteDoc,
   doc,
 } from "firebase/firestore";
-// Importaciones de componentes personalizados
+
 import TablaEmprendedores from "../Components/Emprendedores/TablaEmprendedores";
 import RegistroEmprendedor from "../Components/Emprendedores/RegistroEmprendedor";
 import EdicionEmprendedor from "../Components/Emprendedores/EdicionEmprendedor";
 import EliminacionEmprendedor from "../Components/Emprendedores/EliminacionEmprendedor";
+import CuadroBusquedas from "../Components/Busqueda/CuadroBusquedas";
+import Paginacion from "../Components/Ordenamiento/Paginacion";
 
 const Emprendedores = () => {
-  
-  // Estados para manejo de datos
   const [emprendedores, setEmprendedores] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [nuevoEmprendedor, setNuevoEmprendedor] = useState({
+    foto: "",
     nombres: "",
     apellidos: "",
     cedula: "",
+    genero: "",
     telefono: "",
     direccion: "",
+    usuario: "",
+  });
+  const [nuevoUsuario, setNuevoUsuario] = useState({
+    correo: "",
+    contraseña: "",
+    rol: "Emprendedor",
   });
   const [emprendedorEditado, setEmprendedorEditado] = useState(null);
   const [emprendedorAEliminar, setEmprendedorAEliminar] = useState(null);
-
-  // Referencia a la colección de emprendedores en Firestore
+  const [emprendedoresFiltrados, setEmprendedoresFiltrados] = useState([]);
+  const [searchText, setSearchText] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
   const emprendedorCollection = collection(db, "Emprendedor");
+  const usuarioCollection = collection(db, "Usuario");
 
-  // Función para obtener todos los emprendedores de Firestore
-  const fetchEmprendedor = async () => {
+  const fetchData = async () => {
     try {
-      const data = await getDocs(emprendedorCollection);
-      const fetchedEmprendedor = data.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-      setEmprendedores(fetchedEmprendedor);
+      const emprendedorData = await getDocs(emprendedorCollection);
+      const fetchedEmprendedor = emprendedorData.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      const usuarioData = await getDocs(usuarioCollection);
+      const fetchedUsuario = usuarioData.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+
+      const emprendedoresConCorreo = fetchedEmprendedor.map((emprendedor) => {
+        const usuario = fetchedUsuario.find((user) => user.id === emprendedor.usuario);
+        return {
+          ...emprendedor,
+          correo: usuario ? usuario.correo : "No disponible",
+        };
+      });
+
+      setEmprendedores(emprendedoresConCorreo);
+      setEmprendedoresFiltrados(emprendedoresConCorreo);
     } catch (error) {
       console.error("Error al obtener los emprendedores:", error);
     }
   };
 
-  // Hook useEffect para carga inicial de datos
   useEffect(() => {
-    fetchEmprendedor();
+    fetchData();
   }, []);
 
-  // Manejador de cambios en inputs del formulario de nuevo emprendedor
+  const handleSearchChange = (e) => {
+    const text = e.target.value.toLowerCase();
+    setSearchText(text);
+    const filtrados = emprendedores.filter((emprendedor) =>
+      emprendedor.nombres.toLowerCase().includes(text) ||
+      emprendedor.apellidos.toLowerCase().includes(text) ||
+      emprendedor.cedula.toLowerCase().includes(text) ||
+      emprendedor.telefono.toLowerCase().includes(text) ||
+      emprendedor.direccion.toLowerCase().includes(text)
+    );
+    setEmprendedoresFiltrados(filtrados);
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNuevoEmprendedor((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    let filteredValue = value;
+    if (["nombres", "apellidos", "direccion", "genero"].includes(name)) {
+      filteredValue = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
+    } else if (name === "telefono") {
+      filteredValue = value.replace(/[^0-9]/g, "").slice(0, 8);
+    } else if (name === "cedula") {
+      filteredValue = value.replace(/[^a-zA-Z0-9]/g, "").slice(0-14);
+    } else if (["correo", "contraseña"].includes(name)) {
+      filteredValue = value;
+    }
+    setNuevoEmprendedor((prev) => ({ ...prev, [name]: filteredValue }));
+    setNuevoUsuario((prev) => ({ ...prev, [name]: filteredValue }));
   };
 
-  // Manejador de cambios en inputs del formulario de edición
   const handleEditInputChange = (e) => {
     const { name, value } = e.target;
-    setEmprendedorEditado((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    let filteredValue = value;
+    if (["nombres", "apellidos", "direccion", "genero"].includes(name)) {
+      filteredValue = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
+    } else if (name === "telefono") {
+      filteredValue = value.replace(/[^0-9]/g, "").slice(0, 8);
+    } else if (name === "cedula") {
+      filteredValue = value.replace(/[^a-zA-Z0-9]/g, "").slice(0-14);
+    }
+    setEmprendedorEditado((prev) => ({ ...prev, [name]: filteredValue }));
   };
 
-  // Función para agregar un nuevo emprendedor (CREATE)
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNuevoEmprendedor((prev) => ({ ...prev, foto: reader.result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleEditImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEmprendedorEditado((prev) => ({ ...prev, foto: reader.result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleAddEmprendedor = async () => {
-    if (!nuevoEmprendedor.nombres || !nuevoEmprendedor.apellidos || !nuevoEmprendedor.cedula || !nuevoEmprendedor.telefono || !nuevoEmprendedor.direccion) {
-      alert("Por favor, completa todos los campos antes de guardar.");
+    const { foto, nombres, apellidos, cedula, genero, telefono, direccion } = nuevoEmprendedor;
+    const { correo, contraseña, rol } = nuevoUsuario;
+
+    if (!foto || !nombres || !apellidos || !cedula || !genero || !telefono || !direccion || !correo || !contraseña) {
+      alert("Por favor, completa todos los campos.");
       return;
     }
+
     try {
-      await addDoc(emprendedorCollection, nuevoEmprendedor);
+      const auth = getAuth();
+      const methods = await fetchSignInMethodsForEmail(auth, correo);
+      if (methods.length > 0) {
+        alert("El correo ya está registrado.");
+        return;
+      }
+      const userCredential = await createUserWithEmailAndPassword(auth, correo, contraseña);
+      const uid = userCredential.user.uid;
+      await setDoc(doc(db, "Usuario", uid), { correo, contraseña, rol });
+      await setDoc(doc(db, "Emprendedor", uid), {
+        foto,
+        nombres,
+        apellidos,
+        cedula,
+        genero,
+        telefono,
+        direccion,
+        usuario: uid,
+      });
       setShowModal(false);
-      setNuevoRegistro({ nombres: "", apellidos: "", cedula: "", telefono: "", direccion: "" });
-      await fetchEmprendedor();
+      setNuevoEmprendedor({ foto: "", nombres: "", apellidos: "", cedula: "", genero: "", telefono: "", direccion: "", usuario: "" });
+      setNuevoUsuario({ correo: "", contraseña: "", rol: "Emprendedor" });
+      await fetchData();
     } catch (error) {
       console.error("Error al agregar el emprendedor:", error);
     }
   };
 
-  // Función para actualizar un emprendedor existente (UPDATE)
   const handleEditEmprendedor = async () => {
-    if (!emprendedorEditado.nombres || !emprendedorEditado.apellidos || !emprendedorEditado.cedula || !emprendedorEditado.telefono || !emprendedorEditado.direccion) {
+    if (!emprendedorEditado.foto || !emprendedorEditado.nombres || !emprendedorEditado.apellidos || !emprendedorEditado.cedula || !emprendedorEditado.telefono || !emprendedorEditado.direccion) {
       alert("Por favor, completa todos los campos antes de actualizar.");
       return;
     }
@@ -98,64 +186,89 @@ const Emprendedores = () => {
       const emprendedorRef = doc(db, "Emprendedor", emprendedorEditado.id);
       await updateDoc(emprendedorRef, emprendedorEditado);
       setShowEditModal(false);
-      await fetchEmprendedor();
+      await fetchData();
     } catch (error) {
       console.error("Error al actualizar el emprendedor:", error);
     }
   };
 
-  // Función para eliminar un emprendedor (DELETE)
   const handleDeleteEmprendedor = async () => {
     if (emprendedorAEliminar) {
       try {
-        const emprendedorRef = doc(db, "Emprendedor", emprendedorAEliminar.id);
-        await deleteDoc(emprendedorRef);
+        const uid = emprendedorAEliminar.id;
+        await deleteDoc(doc(db, "Emprendedor", uid));
+        await deleteDoc(doc(db, "Usuario", uid));
         setShowDeleteModal(false);
-        await fetchEmprendedor();
+        await fetchData();
       } catch (error) {
-        console.error("Error al eliminar el emprendedor:", error);
+        console.error("Error al eliminar el emprendedor y usuario:", error);
       }
     }
   };
 
-  // Función para abrir el modal de edición con datos prellenados
   const openEditModal = (emprendedor) => {
     setEmprendedorEditado({ ...emprendedor });
     setShowEditModal(true);
   };
 
-  // Función para abrir el modal de eliminación
   const openDeleteModal = (emprendedor) => {
     setEmprendedorAEliminar(emprendedor);
     setShowDeleteModal(true);
   };
 
-  // Renderizado del componente
+  const paginatedEmprendedores = emprendedoresFiltrados.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   return (
     <Container className="mt-5">
       <br />
       <h4>Gestión de Emprendedores</h4>
-      <Button className="mb-3" onClick={() => setShowModal(true)}>
-        Agregar emprendedor
-      </Button>
+      <Row>
+        <Col lg={2} md={2} sm={2} xs={3}>
+          <Button className="mb-3" onClick={() => setShowModal(true)} style={{ width: "100%" }}>
+            <i className="bi bi-plus-circle me-2"></i>
+            Agregar
+          </Button>
+        </Col>
+        <Col lg={3} md={3} sm={3} xs={5}>
+          <CuadroBusquedas searchText={searchText} handleSearchChange={handleSearchChange} />
+        </Col>
+      </Row>
       <TablaEmprendedores
-        emprendedores={emprendedores}
+        emprendedores={paginatedEmprendedores}
         openEditModal={openEditModal}
         openDeleteModal={openDeleteModal}
+        totalItems={emprendedores.length}
+        itemsPerPage={itemsPerPage}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+      />
+      <Paginacion
+        itemsPerPage={itemsPerPage}
+        totalItems={emprendedoresFiltrados.length}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
       />
       <RegistroEmprendedor
         showModal={showModal}
         setShowModal={setShowModal}
         nuevoEmprendedor={nuevoEmprendedor}
+        nuevoUsuario={nuevoUsuario}
         handleInputChange={handleInputChange}
+        handleImageChange={handleImageChange}
         handleAddEmprendedor={handleAddEmprendedor}
+        usuarios={usuarios}
       />
       <EdicionEmprendedor
         showEditModal={showEditModal}
         setShowEditModal={setShowEditModal}
         emprendedorEditado={emprendedorEditado}
         handleEditInputChange={handleEditInputChange}
+        handleEditImageChange={handleEditImageChange}
         handleEditEmprendedor={handleEditEmprendedor}
+        usuarios={usuarios}
       />
       <EliminacionEmprendedor
         showDeleteModal={showDeleteModal}

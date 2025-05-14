@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, Form, Button } from "react-bootstrap";
+import { Modal, Form, Button, InputGroup } from "react-bootstrap";
 
 const RegistroCategoria = ({
   showModal,
@@ -15,30 +15,43 @@ const RegistroCategoria = ({
       </Modal.Header>
       <Modal.Body>
         <Form>
+          {/* Nombre de la categoría con ícono */}
           <Form.Group className="mb-3">
             <Form.Label>Nombre</Form.Label>
-            <Form.Control
-              type="text"
-              name="nombre"
-              value={nuevaCategoria.nombre}
-              onChange={handleInputChange}
-              placeholder="Ingresa el nombre"
-            />
+            <InputGroup>
+              <InputGroup.Text>
+                <i className="bi bi-tag" />
+              </InputGroup.Text>
+              <Form.Control
+                type="text"
+                name="nombre"
+                value={nuevaCategoria.nombre}
+                onChange={handleInputChange}
+                placeholder="Ingresa el nombre"
+              />
+            </InputGroup>
           </Form.Group>
+
+          {/* Descripción de la categoría con ícono */}
           <Form.Group className="mb-3">
             <Form.Label>Descripción</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              name="descripcion"
-              value={nuevaCategoria.descripcion}
-              onChange={handleInputChange}
-              placeholder="Ingresa la descripción"
-            />
+            <InputGroup>
+              <InputGroup.Text>
+                <i className="bi bi-card-text" />
+              </InputGroup.Text>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                name="descripcion"
+                value={nuevaCategoria.descripcion}
+                onChange={handleInputChange}
+                placeholder="Ingresa la descripción"
+              />
+            </InputGroup>
           </Form.Group>
         </Form>
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer className="justify-content-center">
         <Button variant="secondary" onClick={() => setShowModal(false)}>
           Cancelar
         </Button>

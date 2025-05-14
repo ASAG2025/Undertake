@@ -1,67 +1,111 @@
-import React from "react";
+import React, {useState,useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import "../Cards.css"; 
+import logo from "../assets/LogoUndertake.png";
+import ModalInstalacionIOS from "../Components/Inicio/ModalInstalacionIOS";
 
 const Inicio = () => {
-  const navigate = useNavigate();
+    const [solicitudInstalacion, setSolicitudInstalacion] = useState(null);
+    const [mostrarBotonInstalacion, setMostrarBotonInstalacion] = useState(false);
+    const [esDispositivoIOS, setEsDispositivoIOS] = useState(false);
+    const [mostrarModalInstrucciones, setMostrarModalInstrucciones] = useState(false);
 
-  const handleNavigate = (path) => {
-    navigate(path);
-  };
+    const abrirModalInstrucciones = () => setMostrarModalInstrucciones(true);
+    const cerrarModalInstrucciones = () => setMostrarModalInstrucciones(false);
+
+    // Detectar dispositivo iOS
+    useEffect(() => {
+    const esIOS = /iPad iPhone iPod/.test(navigator.userAgent) && !window.MSStream;
+    setEsDispositivoIOS(esIOS);
+    }, []);
+
+    // Manejar evento beforeinstallprompt
+    useEffect(() => {
+    const manejarSolicitudInstalacion = (evento) => {
+    evento.preventDefault();
+    setSolicitudInstalacion (evento);
+    setMostrarBotonInstalacion(true);
+
+    };
+
+    window.addEventListener("beforeinstallprompt", manejarSolicitudInstalacion);
+    return () => {
+    window.removeEventListener("beforeinstallprompt", manejarSolicitudInstalacion);
+    };
+    }, []);
+
+    const instalacion = async() => {
+    if (!solicitudInstalacion) return;
+
+    try {
+    await solicitudInstalacion.prompt();
+    const { outcome } = await solicitudInstalacion.userChoice;
+    console.log(outcome == "accepted"? "Instalación aceptada": "Instalación rechazada");
+    } catch (error) {
+    console.error("Error al intentar instalar la PWA:", error);
+    } finally {
+    setSolicitudInstalacion (null);
+    setMostrarBotonInstalacion(false);
+    }
+
+    };
 
   return (
-    <Container className="mt-5">
-      <div className="welcome-section text-center mb-5 px-4">
-        <h1 className="fw-bold mb-4 animated fadeIn" style={{ fontSize: "2rem", color: "#2C3E50" }}>
-          <span className="welcome-text">Bienvenido a Underdake</span> donde los emprendedores comienzan a construir su futuro. 💼
-        </h1>
-        <p className="fw-bold mb-5 animated fadeIn" style={{ fontSize: "1.25rem", color: "#2C3E50" }}>
-          <span className="welcome-text">Administra tus programas de financiamiento y registra tu usuario</span> como emprendedor o financiera.
-        </p>
+    <div
+          style={{
+          backgroundImage: `url(${logo})`,
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "contain",
+          backgroundPosition: "center 20px",
+          backgroundColor: "#E0F7FA",
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "2rem",
+          paddingTop: "80px",
+          textAlign: "center",
+        }}
+      >
+
+
+      <h1 className="text-3d" style={{ fontSize: "3rem", marginBottom: "1rem" }}>
+        Bienvenido a <span style={{ color: "#00796b" }}>Undertake</span>
+      </h1>
+      <p style={{ fontSize: "1.25rem", color: "#004d40", fontWeight: "bold", maxWidth: "600px" }}>
+        Donde los emprendedores comienzan a construir su futuro. 💼
+      </p>
+
+    <br/>
+
+      {!esDispositivoIOS && mostrarBotonInstalacion && (
+
+      <div className="my-4">
+
+      <Button className="sombra" variant="primary" onClick={instalacion}>
+      Instalar app Undertake <i className="bi-download"></i>
+      </Button>
       </div>
 
-      {/* Agregando clases responsive para adaptar las tarjetas */}
-      <Row className="g-4 justify-content-center animated fadeIn">
-        {/* Columna para las tarjetas con ajuste para pantallas pequeñas */}
-        <Col xs={12} sm={6} md={4}>
-          <Card className="card shadow-sm border-0 h-100 blue">
-            <Card.Body className="text-center">
-              <Card.Title>Programas 📋</Card.Title>
-              <Card.Text>Visualiza, crea y edita programas de financiamiento.</Card.Text>
-              <Button variant="success" className="card-button" onClick={() => handleNavigate("/programas")}>
-                Ir a Programas
-              </Button>
-            </Card.Body>
-          </Card>
-        </Col>
+      )}
 
-        <Col xs={12} sm={6} md={4}>
-          <Card className="card shadow-sm border-0 h-100 green">
-            <Card.Body className="text-center">
-              <Card.Title>Instituciones 🏦</Card.Title>
-              <Card.Text>Administra tu institución financiera registrada.</Card.Text>
-              <Button variant="success" className="card-button" onClick={() => handleNavigate("/financieras")}>
-                Ver Instituciones
-              </Button>
-            </Card.Body>
-          </Card>
-        </Col>
+      {esDispositivoIOS && (
+        <div className="text-center my-4">
+        <Button className="sombra" variant="primary" onClick={abrirModalInstrucciones}>
+        Cómo instalar Undertake en iPhone <i className="bi-phone"></i>
+        </Button>
+      </div>
+      )}
 
-        <Col xs={12} sm={6} md={4}>
-          <Card className="card shadow-sm border-0 h-100 red">
-            <Card.Body className="text-center">
-              <Card.Title>Emprendedores 👏</Card.Title>
-              <Card.Text>Administra tu usuario registrado.</Card.Text>
-              <Button variant="success" className="card-button" onClick={() => handleNavigate("/emprendedores")}>
-                Ver emprendedores
-              </Button>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
-  );
+        <ModalInstalacionIOS
+        mostrar={mostrarModalInstrucciones}
+        cerrar={cerrarModalInstrucciones}
+        />
+      </div>
+  
+  )
 };
 
 export default Inicio;

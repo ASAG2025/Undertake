@@ -1,164 +1,180 @@
 import React, { useState, useEffect } from "react";
-import { Container, Button } from "react-bootstrap";
+import { Container, Button, Col, Row } from "react-bootstrap";
 import { db } from "../Database/FirebaseConfig";
 import {
   collection,
-  getDocs,
   addDoc,
   updateDoc,
   deleteDoc,
   doc,
+  onSnapshot,
 } from "firebase/firestore";
-// Importaciones de componentes personalizados
 import TablaCategorias from "../Components/Categorias/TablaCategorias";
 import RegistroCategoria from "../Components/Categorias/RegistroCategoria";
 import EdicionCategoria from "../Components/Categorias/EdicionCategoria";
 import EliminacionCategoria from "../Components/Categorias/EliminacionCategoria";
 import CuadroBusquedas from "../Components/Busqueda/CuadroBusquedas";
-
+import Paginacion from "../Components/Ordenamiento/Paginacion";
 
 const Categorias = () => {
-  
-  // Estados para manejo de datos
   const [categorias, setCategorias] = useState([]);
+  const [categoriasFiltradas, setCategoriasFiltradas] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [nuevaCategoria, setNuevaCategoria] = useState({
-    nombre: "",
-    descripcion: "",
-  });
+  const [nuevaCategoria, setNuevaCategoria] = useState({ nombre: "", descripcion: "" });
   const [categoriaEditada, setCategoriaEditada] = useState(null);
   const [categoriaAEliminar, setCategoriaAEliminar] = useState(null);
-  const [categoriasFiltradas, setCategoriasFiltradas] = useState([]);
   const [searchText, setSearchText] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
 
-  // Referencia a la colección de categorías en Firestore
+  const itemsPerPage = 5;
   const categoriasCollection = collection(db, "Categoria");
 
-  // Función para obtener todas las categorías de Firestore
-  const fetchCategorias = async () => {
-    try {
-      const data = await getDocs(categoriasCollection);
-      const fetchedCategorias = data.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-      setCategorias(fetchedCategorias);
-      setCategoriasFiltradas(fetchedCategorias);
-    } catch (error) {
-      console.error("Error al obtener las categorías:", error);
-    }
-  };
-
-  // Hook useEffect para carga inicial de datos
   useEffect(() => {
-    fetchCategorias();
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    setIsOffline(!navigator.onLine);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
   }, []);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(categoriasCollection, (snapshot) => {
+      const data = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      setCategorias(data);
+      setCategoriasFiltradas(
+        data.filter((categoria) =>
+          categoria.nombre.toLowerCase().includes(searchText.toLowerCase()) ||
+          categoria.descripcion.toLowerCase().includes(searchText.toLowerCase())
+        )
+      );
+    });
+
+    return () => unsubscribe();
+  }, [searchText]);
 
   const handleSearchChange = (e) => {
     const text = e.target.value.toLowerCase();
     setSearchText(text);
-
-    const filtradas = categorias.filter((categoria) => 
-      categoria.nombre.toLowerCase().includes(text) ||
-      categoria.descripcion.toLowerCase().includes(text)
+    const filtradas = categorias.filter(
+      (categoria) =>
+        categoria.nombre.toLowerCase().includes(text) ||
+        categoria.descripcion.toLowerCase().includes(text)
     );
     setCategoriasFiltradas(filtradas);
-  }
+  };
 
-  // Manejador de cambios en inputs del formulario de nueva categoría
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNuevaCategoria((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setNuevaCategoria((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Manejador de cambios en inputs del formulario de edición
   const handleEditInputChange = (e) => {
     const { name, value } = e.target;
-    setCategoriaEditada((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setCategoriaEditada((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Función para agregar una nueva categoría (CREATE)
   const handleAddCategoria = async () => {
     if (!nuevaCategoria.nombre || !nuevaCategoria.descripcion) {
-      alert("Por favor, completa todos los campos antes de guardar.");
+      alert("Por favor, completa todos los campos.");
       return;
     }
+    setShowModal(false);
+
+    // Manejo temporal offline
+    const tempId = `temp_${Date.now()}`;
+    const nueva = { ...nuevaCategoria, id: tempId };
+    setCategorias((prev) => [...prev, nueva]);
+    setCategoriasFiltradas((prev) => [...prev, nueva]);
+
     try {
       await addDoc(categoriasCollection, nuevaCategoria);
-      setShowModal(false);
       setNuevaCategoria({ nombre: "", descripcion: "" });
-      await fetchCategorias();
     } catch (error) {
-      console.error("Error al agregar la categoría:", error);
+      console.error("Error al agregar categoría:", error);
+      if (!isOffline) alert("Error al agregar categoría: " + error.message);
     }
   };
 
-  // Función para actualizar una categoría existente (UPDATE)
   const handleEditCategoria = async () => {
     if (!categoriaEditada.nombre || !categoriaEditada.descripcion) {
-      alert("Por favor, completa todos los campos antes de actualizar.");
+      alert("Por favor, completa todos los campos.");
       return;
     }
+    setShowEditModal(false);
     try {
-      const categoriaRef = doc(db, "Categoria", categoriaEditada.id);
-      await updateDoc(categoriaRef, categoriaEditada);
-      setShowEditModal(false);
-      await fetchCategorias();
+      const ref = doc(db, "Categoria", categoriaEditada.id);
+      await updateDoc(ref, categoriaEditada);
     } catch (error) {
-      console.error("Error al actualizar la categoría:", error);
+      console.error("Error al actualizar categoría:", error);
+      if (!isOffline) alert("Error al actualizar categoría: " + error.message);
     }
   };
 
-  // Función para eliminar una categoría (DELETE)
   const handleDeleteCategoria = async () => {
-    if (categoriaAEliminar) {
-      try {
-        const categoriaRef = doc(db, "Categoria", categoriaAEliminar.id);
-        await deleteDoc(categoriaRef);
-        setShowDeleteModal(false);
-        await fetchCategorias();
-      } catch (error) {
-        console.error("Error al eliminar la categoría:", error);
-      }
+    if (!categoriaAEliminar) return;
+    setShowDeleteModal(false);
+    try {
+      const ref = doc(db, "Categoria", categoriaAEliminar.id);
+      await deleteDoc(ref);
+    } catch (error) {
+      console.error("Error al eliminar categoría:", error);
+      if (!isOffline) alert("Error al eliminar categoría: " + error.message);
     }
   };
 
-  // Función para abrir el modal de edición con datos prellenados
   const openEditModal = (categoria) => {
     setCategoriaEditada({ ...categoria });
     setShowEditModal(true);
   };
 
-  // Función para abrir el modal de eliminación
   const openDeleteModal = (categoria) => {
     setCategoriaAEliminar(categoria);
     setShowDeleteModal(true);
   };
 
-  // Renderizado del componente
+  const paginatedCategorias = categoriasFiltradas.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   return (
     <Container className="mt-5">
       <br />
-      <h4>Gestión de Categorías</h4>
-      <Button className="mb-3" onClick={() => setShowModal(true)}>
-        Agregar categoría
-      </Button>
-      <CuadroBusquedas
-        searchText={searchText}
-        handleSearchChange={handleSearchChange}
-      />
+      <h4>Gestión de Categorías {isOffline && "(Modo sin conexión)"}</h4>
+      <Row>
+        <Col lg={2}>
+          <Button onClick={() => setShowModal(true)} className="mb-3" style={{ width: "100%" }}>
+            <i className="bi bi-plus-circle me-2" />
+            Agregar
+          </Button>
+        </Col>
+        <Col lg={3}>
+          <CuadroBusquedas searchText={searchText} handleSearchChange={handleSearchChange} />
+        </Col>
+      </Row>
       <TablaCategorias
-        categorias={categoriasFiltradas}
+        categorias={paginatedCategorias}
         openEditModal={openEditModal}
         openDeleteModal={openDeleteModal}
+        totalItems={categorias.length}
+        itemsPerPage={itemsPerPage}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+      />
+      <Paginacion
+        itemsPerPage={itemsPerPage}
+        totalItems={categoriasFiltradas.length}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
       />
       <RegistroCategoria
         showModal={showModal}

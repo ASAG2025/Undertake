@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Button } from "react-bootstrap";
+import { Container, Button, Row, Col } from "react-bootstrap";
 import { db } from "../Database/FirebaseConfig";
 import {
   collection,
@@ -150,16 +150,22 @@ const Programas = () => {
 
   return (
     <Container className="mt-5">
-      <h3>Gestión de Programas de Financiamiento</h3>
-      <Button className="mb-3" onClick={abrirModalNuevo}>
-        Agregar programa
+      <br />
+      <h4>Gestión de Programas de Financiamiento</h4>
+      <Row>
+      <Col lg={2} md={2} sm={2} xs={3}>
+      <Button className="mb-3" onClick={abrirModalNuevo} style={{width:"100%"}}>
+        <i className="bi bi-plus-circle me-2"></i>
+        Agregar
       </Button>
-
+      </Col>
+      <Col lg={3} md={3} sm={3} xs={5}>
       <CuadroBusquedas
         searchText={searchText}
         handleSearchChange={handleSearchChange}
       />
-
+    </Col>
+      </Row>
       <ProgramasFinanciamiento
         programas={programasFiltrados}
         onEditar={editarPrograma}

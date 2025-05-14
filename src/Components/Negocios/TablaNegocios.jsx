@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Table, Button, Image } from "react-bootstrap";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
-const TablaProductos = ({ productos, openEditModal, openDeleteModal }) => {
+const TablaNegocios = ({ negocios, openEditModal, openDeleteModal }) => {
   const [expandedId, setExpandedId] = useState(null);
 
   const toggleDescripcion = (id) => {
@@ -11,6 +11,7 @@ const TablaProductos = ({ productos, openEditModal, openDeleteModal }) => {
 
   const renderDescripcion = (descripcion, id) => {
     const limite = 40;
+    if (!descripcion) return "";
     if (descripcion.length <= limite) return descripcion;
 
     return (
@@ -27,41 +28,49 @@ const TablaProductos = ({ productos, openEditModal, openDeleteModal }) => {
     <Table striped bordered hover responsive>
       <thead>
         <tr>
-          <th>Imagen</th>
-          <th>Nombre</th>
+          <th>Logo</th>
+          <th>Nombre del Negocio</th>
           <th>Descripción</th>
-          <th>Precio</th>
-          <th>Cantidad</th>
           <th>Categoría</th>
+          <th>Ubicación</th>
+          <th>Propietario</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        {productos.map((producto) => (
-          <tr key={producto.id}>
+        {negocios.map((negocio) => (
+          <tr key={negocio.id}>
             <td>
-              {producto.imagen && (
-                <Image src={producto.imagen} width="50" height="50" />
+              {negocio.logo ? (
+                <img
+                  src={negocio.logo}
+                  alt="Foto"
+                  width="50"
+                  height="50"
+                  style={{ objectFit: "cover", borderRadius: "50%" }}
+                />
+              ) : (
+                <span>Sin foto</span>
               )}
             </td>
-            <td>{producto.nombre}</td>
-            <td>{renderDescripcion(producto.descripcion, producto.id)}</td>
-            <td>C${producto.precio}</td>
-            <td>{producto.cantidad}</td>
-            <td>{producto.categoria}</td>
+            <td>{negocio.nombre_negocio}</td>
+            <td>{renderDescripcion(negocio.descripcion, negocio.id)}</td>
+            <td>{negocio.categoria}</td>
+            <td>{negocio.ubicacion}</td>
+            <td>{negocio.nombres}</td>
             <td>
               <Button
                 variant="outline-warning"
                 size="sm"
                 className="me-2"
-                onClick={() => openEditModal(producto)}
+                onClick={() => openEditModal(negocio)}
               >
                 <i className="bi bi-pencil"></i>
               </Button>
               <Button
                 variant="outline-danger"
                 size="sm"
-                onClick={() => openDeleteModal(producto)}
+                onClick={() => openDeleteModal(negocio)}
               >
                 <i className="bi bi-trash"></i>
               </Button>
@@ -73,4 +82,4 @@ const TablaProductos = ({ productos, openEditModal, openDeleteModal }) => {
   );
 };
 
-export default TablaProductos;
+export default TablaNegocios;
