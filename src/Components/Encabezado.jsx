@@ -89,6 +89,9 @@ const Encabezado = () => {
                     <Nav.Link onClick={() => handleNavigate("/CardTaller")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
                       <strong>Talleres</strong>
                     </Nav.Link>
+                    <Nav.Link onClick={() => handleNavigate("/Estadisticas")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                      <strong>Estadisticas</strong>
+                    </Nav.Link>
                   </>
                 )}
 
@@ -133,6 +136,9 @@ const Encabezado = () => {
                     </Nav.Link>
                     <Nav.Link onClick={() => handleNavigate("/CardTaller")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
                       <strong>Talleres</strong>
+                    </Nav.Link>
+                    <Nav.Link onClick={() => handleNavigate("/Estadisticas")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                      <strong>Estadisticas</strong>
                     </Nav.Link>
                   </>
                 )}

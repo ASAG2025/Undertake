@@ -195,6 +195,18 @@ const Productos = () => {
     setShowDeleteModal(true);
   };
 
+  const handleCopy = (producto) => {
+    const rowData = `Nombre: ${producto.nombre}\nPrecio: C$${producto.precio}\nCategoría: ${producto.categoria}`;
+    navigator.clipboard
+      .writeText(rowData)
+      .then(() => {
+        console.log("Datos copiados al portapapeles:\n" + rowData);
+      })
+      .catch((err) => {
+        console.error("Error al copiar al portapapeles:", err);
+      });
+  };
+
   const paginatedProductos = productosFiltrados.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
@@ -226,6 +238,7 @@ const Productos = () => {
         itemsPerPage={itemsPerPage}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
+        handleCopy={handleCopy} 
       />
       <Paginacion
         itemsPerPage={itemsPerPage}
