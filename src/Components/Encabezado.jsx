@@ -63,53 +63,10 @@ const Encabezado = () => {
               <Nav className="justify-content-end flex-grow-1 pe-3">
                 
                 {/* Enlace común: Inicio */}
-                <Nav.Link onClick={() => handleNavigate("/inicio")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                <Nav.Link onClick={() => handleNavigate("/Inicio")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
                   {isCollapsed ? <i className="bi-house-door-fill me-2"></i> : null}
                   <strong>Inicio</strong>
                 </Nav.Link>
-
-                {/* Menú para Emprendedor */}
-                {rol === "Emprendedor" && (
-                  <>
-                    <Nav.Link onClick={() => handleNavigate("/Emprendedores")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
-                      <strong>Emprendedores</strong>
-                    </Nav.Link>
-                    <Nav.Link onClick={() => handleNavigate("/Negocios")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
-                      <strong>Negocios</strong>
-                    </Nav.Link>
-                    <Nav.Link onClick={() => handleNavigate("/Productos")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
-                      <strong>Productos</strong>
-                    </Nav.Link>
-                    <Nav.Link onClick={() => handleNavigate("/Categorias")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
-                      <strong>Categorías</strong>
-                    </Nav.Link>
-                    <Nav.Link onClick={() => handleNavigate("/Catalogo")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
-                      <strong>Catálogo</strong>
-                    </Nav.Link>
-                    <Nav.Link onClick={() => handleNavigate("/CardTaller")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
-                      <strong>Talleres</strong>
-                    </Nav.Link>
-                    <Nav.Link onClick={() => handleNavigate("/Estadisticas")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
-                      <strong>Estadisticas</strong>
-                    </Nav.Link>
-                  </>
-                )}
-
-                {/* Menú para Financiera */}
-                {rol === "Financiera" && (
-                  <>
-                    <Nav.Link onClick={() => handleNavigate("/Financieras")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
-                      <strong>Financieras</strong>
-                    </Nav.Link>
-                    <Nav.Link onClick={() => handleNavigate("/Programas")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
-                      <strong>Programas</strong>
-                    </Nav.Link>
-                    <Nav.Link onClick={() => handleNavigate("/CardTaller")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
-                      <strong>Talleres</strong>
-                    </Nav.Link>
-                  </>
-                )}
-
                 {/* Menú para Administrador (acceso total) */}
                 {rol === "Administrador" && (
                   <>
@@ -140,14 +97,63 @@ const Encabezado = () => {
                     <Nav.Link onClick={() => handleNavigate("/Estadisticas")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
                       <strong>Estadisticas</strong>
                     </Nav.Link>
+                    <Nav.Link onClick={() => handleNavigate("/Clientes")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                      <strong>Clientes</strong>
+                    </Nav.Link>
+                  </>
+                )}
+                
+                {/* Menú para Emprendedor */}
+                {rol === "Emprendedor" && (
+                  <>
+                    <Nav.Link onClick={() => handleNavigate("/Emprendedores")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                      <strong>Emprendedores</strong>
+                    </Nav.Link>
+                    <Nav.Link onClick={() => handleNavigate("/Negocios")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                      <strong>Negocios</strong>
+                    </Nav.Link>
+                    <Nav.Link onClick={() => handleNavigate("/Productos")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                      <strong>Productos</strong>
+                    </Nav.Link>
+                    <Nav.Link onClick={() => handleNavigate("/Categorias")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                      <strong>Categorías</strong>
+                    </Nav.Link>
+                    <Nav.Link onClick={() => handleNavigate("/Catalogo")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                      <strong>Catálogo</strong>
+                    </Nav.Link>
+                    <Nav.Link onClick={() => handleNavigate("/CardTaller")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                      <strong>Talleres</strong>
+                    </Nav.Link>
+                    <Nav.Link onClick={() => handleNavigate("/Estadisticas")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                      <strong>Estadisticas</strong>
+                    </Nav.Link>
+                    <Nav.Link onClick={() => handleNavigate("/Clientes")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                      <strong>Clientes</strong>
+                    </Nav.Link>
+                    <Nav.Link onClick={() => handleNavigate("/Reseñas")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                      <strong>Reseñas</strong>
+                    </Nav.Link>
                   </>
                 )}
 
-                {/* Talleres y Reseñas para todos */}
-                <Nav.Link onClick={() => handleNavigate("/Reseñas")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
-                  <strong>Reseñas</strong>
-                </Nav.Link>
-
+                {/* Menú para Financiera */}
+                {rol === "Financiera" && (
+                  <>
+                    <Nav.Link onClick={() => handleNavigate("/Financieras")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                      <strong>Financieras</strong>
+                    </Nav.Link>
+                    <Nav.Link onClick={() => handleNavigate("/Programas")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                      <strong>Programas</strong>
+                    </Nav.Link>
+                    <Nav.Link onClick={() => handleNavigate("/CardTaller")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                      <strong>Talleres</strong>
+                    </Nav.Link>
+                    <Nav.Link onClick={() => handleNavigate("/Reseñas")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                      <strong>Reseñas</strong>
+                    </Nav.Link>
+                  </>
+                )}
+                
                 {/* Opción de cerrar sesión */}
                 {isLoggedIn ? (
                   <Nav.Link onClick={handleLogout} className={isCollapsed ? "text-black" : "text-white"}>

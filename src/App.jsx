@@ -15,6 +15,7 @@ import Negocios from "./Views/Negocios";
 import Catalogo from "./Views/Catalogo"
 import CardTaller from './Components/CardTaller/CardTaller';
 import Estadisticas from "./Views/Estadisticas";
+import Clientes from "./Views/Clientes";
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
               <Route path="/Negocios" element={<ProtectedRoute element={<Negocios />} roles={["Administrador", "Emprendedor"]} />} />
               <Route path="/Catalogo" element={<ProtectedRoute element={<Catalogo />} roles={["Administrador","Cliente", "Emprendedor", "Financiera"]} />} />
               <Route path="/Estadisticas" element={<ProtectedRoute element={<Estadisticas />} roles={["Administrador", "Emprendedor"]} />} />
+              <Route path="/Clientes" element={<ProtectedRoute element={<Clientes />} roles={["Administrador", "Emprendedor"]} />} />
               <Route
                   path="/CardTaller"
                   element={
