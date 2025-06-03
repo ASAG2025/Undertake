@@ -4,6 +4,7 @@ import { db } from "../Database/FirebaseConfig";
 import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
 import EdicionProducto from "../Components/Productos/EdicionProducto";
 import ProductosPorNegocio from "../Components/Catalogo/ProductosPorNegocio";
+import { useCarrito } from "../Components/Carrito/CarritoContext";
 
 const Catalogo = () => {
   const [productos, setProductos] = useState([]);
@@ -14,6 +15,8 @@ const Catalogo = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [productoEditado, setProductoEditado] = useState(null);
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
+
+  const { agregarProducto } = useCarrito();
 
   const productosCollection = collection(db, "Producto");
   const categoriasCollection = collection(db, "Categoria");
@@ -57,7 +60,10 @@ const Catalogo = () => {
       setProductos(fetchedProductos);
       setCategorias(fetchedCategorias);
       setNegocios(fetchedNegocios);
-      if (isOffline) console.log("Offline: datos cargados desde caché local.");
+
+      if (isOffline) {
+        console.log("Offline: datos cargados desde caché local.");
+      }
     } catch (error) {
       console.error("Error al obtener datos:", error);
       if (isOffline) {
@@ -121,6 +127,27 @@ const Catalogo = () => {
     }
   };
 
+  const obtenerNombreNegocio = (idNegocio) => {
+    const negocio = negocios.find((n) => n.id === idNegocio);
+    return negocio ? negocio.nombre_negocio : "Desconocido";
+  };
+
+  const obtenerUIDEmprendedor = (idNegocio) => {
+    const negocio = negocios.find((n) => n.id === idNegocio);
+    return negocio ? negocio.usuario : "desconocido";
+  };
+
+  const handleAgregarAlCarrito = (producto) => {
+    agregarProducto({
+      id: producto.id,
+      nombre: producto.nombre,
+      precio: producto.precio,
+      cantidad: 1,
+      emprendedorUID: obtenerUIDEmprendedor(producto.id_negocio),
+      emprendedorNombre: obtenerNombreNegocio(producto.id_negocio),
+    });
+  };
+
   const productosFiltrados = productos.filter((producto) => {
     const matchesCategoria =
       categoriaSeleccionada === "Todas" || producto.categoria === categoriaSeleccionada;
@@ -134,7 +161,6 @@ const Catalogo = () => {
       <br />
       <h4>Catálogo de Productos {isOffline && <span style={{ color: "red" }}>(Modo sin conexión)</span>}</h4>
       <Row>
-        {/* Filtro por negocio */}
         <Col lg={3} md={3} sm={6}>
           <Form.Group className="mb-3">
             <Form.Label>Filtrar por negocio:</Form.Label>
@@ -159,6 +185,7 @@ const Catalogo = () => {
             productos={productosFiltrados}
             openEditModal={openEditModal}
             negocios={negocios}
+            agregarProducto={handleAgregarAlCarrito} // ← función completa
           />
         ) : (
           <p>No hay productos en este negocio.</p>

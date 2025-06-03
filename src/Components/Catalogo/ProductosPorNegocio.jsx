@@ -3,7 +3,7 @@ import { Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import TarjetaProducto from "./TarjetaProducto";
 
-const ProductosPorNegocio = ({ productos, openEditModal, negocios }) => {
+const ProductosPorNegocio = ({ productos, openEditModal, negocios, agregarProducto}) => {
   // Generar un mapa de negocios (id -> nombre y logo)
   const negociosMap = negocios?.reduce((acc, negocio) => {
     acc[negocio.id] = { nombre: negocio.nombre_negocio, logo: negocio.logo };
@@ -40,6 +40,7 @@ const ProductosPorNegocio = ({ productos, openEditModal, negocios }) => {
                   key={producto.id}
                   producto={producto}
                   openEditModal={openEditModal}
+                  agregarProducto={agregarProducto}
                 />
               ))}
             </Row>

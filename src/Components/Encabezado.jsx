@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
@@ -8,6 +8,7 @@ import logo from "../assets/LogoUndertake.png";
 import { useAuth } from "../Database/AuthContext";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import "../App.css";
+import { useCarrito } from "../Components/Carrito/CarritoContext";
 
 const Encabezado = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -31,6 +32,9 @@ const Encabezado = () => {
     navigate(path);
     setIsCollapsed(false);
   };
+
+  const { carrito } = useCarrito();
+  const cantidadProductos = carrito.reduce((total, item) => total + item.cantidad, 0);
 
   return (
     <Navbar expand="md" fixed="top" className="color-navbar">
@@ -99,6 +103,21 @@ const Encabezado = () => {
                     </Nav.Link>
                     <Nav.Link onClick={() => handleNavigate("/Clientes")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
                       <strong>Clientes</strong>
+                    </Nav.Link>
+                    <Nav.Link onClick={() => handleNavigate("/HistorialVentas")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                      <strong>Historial Ventas</strong>
+                    </Nav.Link>
+                    <Nav.Link onClick={() => handleNavigate("/Carrito")} className={isCollapsed ? "color-texto-marca position-relative" : "text-white position-relative"}>
+                      <i className="bi bi-cart me-2"></i>
+                      {isCollapsed && <strong>Carrito</strong>}
+                      {cantidadProductos > 0 && (
+                        <span
+                          className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success"
+                          style={{ fontSize: '0.7rem' }}
+                        >
+                          {cantidadProductos}
+                        </span>
+                      )}
                     </Nav.Link>
                   </>
                 )}
