@@ -90,31 +90,20 @@ const Emprendedores = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    let filteredValue = value;
-    if (["nombres", "apellidos", "direccion", "genero"].includes(name)) {
-      filteredValue = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
-    } else if (name === "telefono") {
-      filteredValue = value.replace(/[^0-9]/g, "").slice(0, 8);
-    } else if (name === "cedula") {
-      filteredValue = value.replace(/[^a-zA-Z0-9]/g, "").slice(0-14);
-    } else if (["correo", "contraseña"].includes(name)) {
-      filteredValue = value;
-    }
-    setNuevoEmprendedor((prev) => ({ ...prev, [name]: filteredValue }));
-    setNuevoUsuario((prev) => ({ ...prev, [name]: filteredValue }));
+    setNuevoEmprendedor((prev) => ({ 
+      ...prev, 
+      [name]: value }));
+    setNuevoUsuario((prev) => ({ 
+      ...prev, 
+      [name]: value }));
   };
 
   const handleEditInputChange = (e) => {
     const { name, value } = e.target;
-    let filteredValue = value;
-    if (["nombres", "apellidos", "direccion", "genero"].includes(name)) {
-      filteredValue = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
-    } else if (name === "telefono") {
-      filteredValue = value.replace(/[^0-9]/g, "").slice(0, 8);
-    } else if (name === "cedula") {
-      filteredValue = value.replace(/[^a-zA-Z0-9]/g, "").slice(0-14);
-    }
-    setEmprendedorEditado((prev) => ({ ...prev, [name]: filteredValue }));
+    setEmprendedorEditado ((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleImageChange = (e) => {
