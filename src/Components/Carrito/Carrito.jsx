@@ -4,9 +4,13 @@ import { useCarrito } from "../Carrito/CarritoContext";
 import { db } from "../../Database/FirebaseConfig";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useAuth } from "../../Database/AuthContext";
-import StripeConfig from "../../Stripe/StripeConfig";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 import FormularioPago from "../MetodoPago/FormularioPago";
 import { jsPDF } from "jspdf";
+
+// ✅ Asegurate de poner tu clave pública de Stripe aquí:
+const stripePromise = loadStripe("pk_test_51RVO9wJBcHgkqCWfsLUpElMuvvUrC8eUiZPmrMh0G33IGvoMjFXnLjtQgjMrInO5WuPDQZYFMbjXLDCNval6dCJt00iERwyvGr");
 
 const Carrito = () => {
   const { carrito, eliminarProducto, vaciarCarrito } = useCarrito();
@@ -53,13 +57,11 @@ const Carrito = () => {
 
   const procesarCompra = async () => {
     try {
-      const ventasRef = collection(db, "ventas");
+      const ventasRef = collection(db, "VentaOnline");
 
       const batch = carrito.map((producto) => {
         if (!producto.emprendedorUID || !producto.emprendedorNombre) {
-          throw new Error(
-            `El producto "${producto.nombre}" no tiene datos del emprendedor.`
-          );
+          throw new Error(`El producto "${producto.nombre}" no tiene datos del emprendedor.`);
         }
 
         return {
@@ -143,7 +145,6 @@ const Carrito = () => {
         </>
       )}
 
-      {/* Modal de selección de método de pago */}
       <Modal show={mostrarModalPago} onHide={() => setMostrarModalPago(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Selecciona el método de pago</Modal.Title>
@@ -176,9 +177,9 @@ const Carrito = () => {
 
           {mostrarFormularioPago && metodoPago === "tarjeta" && (
             <div className="mt-3">
-              <StripeConfig>
+              <Elements stripe={stripePromise}>
                 <FormularioPago monto={total} onPagoExitoso={procesarCompra} />
-              </StripeConfig>
+              </Elements>
             </div>
           )}
         </Modal.Body>
