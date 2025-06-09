@@ -3,7 +3,13 @@ import { Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import TarjetaProducto from "./TarjetaProducto";
 
-const ProductosPorNegocio = ({ productos, openEditModal, negocios, agregarProducto}) => {
+const ProductosPorNegocio = ({
+  productos,
+  openEditModal,
+  negocios,
+  agregarProducto,
+  onAgregarProducto
+}) => {
   // Generar un mapa de negocios (id -> nombre y logo)
   const negociosMap = negocios?.reduce((acc, negocio) => {
     acc[negocio.id] = { nombre: negocio.nombre_negocio, logo: negocio.logo };
@@ -27,11 +33,20 @@ const ProductosPorNegocio = ({ productos, openEditModal, negocios, agregarProduc
         return (
           <div key={idNegocio} className="mb-4">
             <h5 className="mb-3">
-              <Link to={`/Negocios/${idNegocio}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              {logo && <img src={logo} alt={nombre} style={{ width: '50px', height: '50px', borderRadius: '50%' }} />}
-              <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{nombre}</span>
-            </div>
+              <Link
+                to={`/Negocios/${idNegocio}`}
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  {logo && (
+                    <img
+                      src={logo}
+                      alt={nombre}
+                      style={{ width: "50px", height: "50px", borderRadius: "50%" }}
+                    />
+                  )}
+                  <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>{nombre}</span>
+                </div>
               </Link>
             </h5>
             <Row>
@@ -41,6 +56,7 @@ const ProductosPorNegocio = ({ productos, openEditModal, negocios, agregarProduc
                   producto={producto}
                   openEditModal={openEditModal}
                   agregarProducto={agregarProducto}
+                  onAgregar={() => onAgregarProducto(producto)}
                 />
               ))}
             </Row>

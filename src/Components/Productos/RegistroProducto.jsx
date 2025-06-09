@@ -93,7 +93,7 @@ const RegistroProducto = ({
             <Col md={6}>
               <Form.Label>Precio</Form.Label>
               <InputGroup>
-                <InputGroup.Text>$</InputGroup.Text>
+                <InputGroup.Text>C$</InputGroup.Text>
                 <Form.Control
                   type="number"
                   name="precio"
