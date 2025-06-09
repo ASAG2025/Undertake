@@ -18,7 +18,6 @@ const RegistroNegocio = ({
       <Modal.Body>
         <Form>
           <Form.Group className="mb-4 text-center" style={{ position: "relative" }}>
-              <Form.Label className="d-block mb-2">Logo del Negocio</Form.Label>
 
               {/* Input oculto */}
               <Form.Control
@@ -66,6 +65,7 @@ const RegistroNegocio = ({
                   <i className="bi bi-upload" style={{ color: "white", fontSize: "14px" }}></i>
                 </div>
               </label>
+              <Form.Label className="d-block mb-2">Logo del Negocio</Form.Label>
             </Form.Group>
 
 

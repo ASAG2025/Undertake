@@ -151,32 +151,32 @@ const Negocios = () => {
     }
   };
 
-  const handleAddNegocio = async () => {
-    const { nombre_negocio, descripcion, categoria, ubicacion, logo } = nuevoNegocio;
-    if (!nombre_negocio || !descripcion || !categoria || !ubicacion || !logo) {
-      alert("Por favor, completa todos los campos.");
-      return;
-    }
-    setShowModal(false);
-    const tempId = `temp_${Date.now()}`;
-    const negocioConId = { ...nuevoNegocio, id: tempId };
-    setNegocios((prev) => [...prev, negocioConId]);
-    setNegociosFiltrados((prev) => [...prev, negocioConId]);
-    try {
-      await addDoc(negociosCollection, nuevoNegocio);
-      setNuevoNegocio({
-        id_emprendedor: auth.currentUser?.uid || "",
-        nombre_negocio: "",
-        descripcion: "",
-        categoria: "",
-        ubicacion: "",
-        logo: "",
-      });
-    } catch (error) {
-      console.error("Error al agregar negocio:", error);
-      if (!isOffline) alert("Error al agregar negocio: " + error.message);
-    }
-  };
+      const handleAddNegocio = async () => {
+      const { nombre_negocio, descripcion, categoria, ubicacion, logo } = nuevoNegocio;
+      if (!nombre_negocio || !descripcion || !categoria || !ubicacion || !logo) {
+        alert("Por favor, completa todos los campos.");
+        return;
+      }
+
+      setShowModal(false);
+
+      try {
+        await addDoc(negociosCollection, nuevoNegocio);
+
+        setNuevoNegocio({
+          id_emprendedor: auth.currentUser?.uid || "",
+          nombre_negocio: "",
+          descripcion: "",
+          categoria: "",
+          ubicacion: "",
+          logo: "",
+        });
+      } catch (error) {
+        console.error("Error al agregar negocio:", error);
+        if (!isOffline) alert("Error al agregar negocio: " + error.message);
+      }
+    };
+
 
   const handleEditNegocio = async () => {
     const { nombre_negocio, descripcion, categoria, ubicacion, logo } = negocioEditado;
@@ -225,16 +225,19 @@ const Negocios = () => {
     <Container className="mt-5">
       <br />
       <h4>Gestión de Negocios {isOffline && "(Modo sin conexión)"}</h4>
-      <Row>
-        <Col lg={2}>
-          <Button onClick={() => setShowModal(true)} className="mb-3" style={{ width: "100%" }}>
+      <Row className="mb-3">
+      <Col>
+        <div className="d-flex justify-content-end align-items-start gap-3">
+          <Button onClick={() => setShowModal(true)} className="btn btn-primary">
             <i className="bi bi-plus-circle me-2" />
             Agregar
           </Button>
-        </Col>
-        <Col lg={3}>
-          <CuadroBusquedas searchText={searchText} handleSearchChange={handleSearchChange} />
-        </Col>
+          <CuadroBusquedas
+            searchText={searchText}
+            handleSearchChange={handleSearchChange}
+          />
+        </div>
+      </Col>
       </Row>
       <TablaNegocios
         negocios={paginatedNegocios}

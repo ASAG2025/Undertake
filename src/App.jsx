@@ -14,12 +14,13 @@ import Categorias from "./Views/Categorias";
 import Programas from "./Views/Programas";
 import Negocios from "./Views/Negocios";
 import Catalogo from "./Views/Catalogo"
-import CardTaller from './Components/CardTaller/CardTaller';
+
 import Estadisticas from "./Views/Estadisticas";
 import Clientes from "./Views/Clientes";
 import Ventas from "./Views/Ventas";
 import Carrito from "./Components/Carrito/Carrito"; //
 import HistorialVentas from "./Views/HistorialVentas";
+import Talleres from "./Views/Talleres";
 
 function App() {
   return (
@@ -42,19 +43,10 @@ function App() {
                 <Route path="/Estadisticas" element={<ProtectedRoute element={<Estadisticas />} roles={["Administrador", "Emprendedor"]} />} />
                 <Route path="/Clientes" element={<ProtectedRoute element={<Clientes />} roles={["Administrador", "Emprendedor"]} />} />
                 <Route path="/Ventas" element={<ProtectedRoute element={<Ventas />} roles={["Administrador", "Emprendedor"]} />} />
-                <Route path="/Carrito" element={<ProtectedRoute element={<Carrito />} roles={["Administrador", "Emprendedor", "Cliente"]} />} />
                 <Route path="/HistorialVentas" element={<ProtectedRoute element={<HistorialVentas />} roles={["Administrador", "Emprendedor"]} />} />
-                <Route
-                    path="/CardTaller"
-                    element={
-                      <CardTaller
-                        titulo="Taller de Marketing"
-                        imagen="https://tse1.mm.bing.net/th/id/OIP.jHBi_ibBabDxOOex7BuZaAHaES?w=800&h=464&rs=1&pid=ImgDetMain"
-                        descripcion="Este es un taller te ayudará a comprender todo lo que necesites en Marketing"
-                        tags={["Marketing en Redes"]}
-                        video="https://youtu.be/hgqRvnyjQak?si=BiWhjGLMNi-UnoYr"
-                      />
-                    } />
+                <Route path="/Carrito" element={<ProtectedRoute element={<Carrito />} roles={["Administrador", "Emprendedor", "Cliente"]} />} />
+                <Route path="/Talleres" element={<ProtectedRoute element={<Talleres />} roles={["Administrador", "Emprendedor", "Financieras"]} />} />
+                
               </Routes>
             </main>
           </div>

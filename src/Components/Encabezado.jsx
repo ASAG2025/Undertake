@@ -9,10 +9,13 @@ import { useAuth } from "../Database/AuthContext";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import "../App.css";
 import { useCarrito } from "../Components/Carrito/CarritoContext";
+import Dropdown from "react-bootstrap/Dropdown";
+import DropdownButton from "react-bootstrap/DropdownButton";
+
 
 const Encabezado = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const { isLoggedIn, logout, rol } = useAuth();  // Asumiendo que 'rol' viene de tu AuthContext
+  const { isLoggedIn, logout, rol, user, perfil } = useAuth();  // Asumiendo que 'rol' viene de tu AuthContext
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -95,7 +98,7 @@ const Encabezado = () => {
                     <Nav.Link onClick={() => handleNavigate("/Programas")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
                       <strong>Programas</strong>
                     </Nav.Link>
-                    <Nav.Link onClick={() => handleNavigate("/CardTaller")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                    <Nav.Link onClick={() => handleNavigate("/Talleres")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
                       <strong>Talleres</strong>
                     </Nav.Link>
                     <Nav.Link onClick={() => handleNavigate("/Estadisticas")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
@@ -104,9 +107,12 @@ const Encabezado = () => {
                     <Nav.Link onClick={() => handleNavigate("/Clientes")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
                       <strong>Clientes</strong>
                     </Nav.Link>
-                    <Nav.Link onClick={() => handleNavigate("/HistorialVentas")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
-                      <strong>Historial Ventas</strong>
+                    <Nav.Link onClick={() => handleNavigate("/Ventas")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                      <strong>Ventas</strong>
                     </Nav.Link>
+                    {/*<Nav.Link onClick={() => handleNavigate("/HistorialVentas")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                      <strong>HistorialVentas</strong>
+                    </Nav.Link>*/}
                     <Nav.Link onClick={() => handleNavigate("/Carrito")} className={isCollapsed ? "color-texto-marca position-relative" : "text-white position-relative"}>
                       <i className="bi bi-cart me-2"></i>
                       {isCollapsed && <strong>Carrito</strong>}
@@ -140,7 +146,7 @@ const Encabezado = () => {
                     <Nav.Link onClick={() => handleNavigate("/Catalogo")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
                       <strong>Catálogo</strong>
                     </Nav.Link>
-                    <Nav.Link onClick={() => handleNavigate("/CardTaller")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                    <Nav.Link onClick={() => handleNavigate("/Talleres")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
                       <strong>Talleres</strong>
                     </Nav.Link>
                     <Nav.Link onClick={() => handleNavigate("/Estadisticas")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
@@ -149,8 +155,11 @@ const Encabezado = () => {
                     <Nav.Link onClick={() => handleNavigate("/Clientes")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
                       <strong>Clientes</strong>
                     </Nav.Link>
-                    <Nav.Link onClick={() => handleNavigate("/Reseñas")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
-                      <strong>Reseñas</strong>
+                    <Nav.Link onClick={() => handleNavigate("/Ventas")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                      <strong>Ventas</strong>
+                    </Nav.Link>
+                    <Nav.Link onClick={() => handleNavigate("/HistorialVentas")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                      <strong>Ventas</strong>
                     </Nav.Link>
                   </>
                 )}
@@ -172,13 +181,34 @@ const Encabezado = () => {
                     </Nav.Link>
                   </>
                 )}
-                
+
+               {isLoggedIn && perfil && (
+                  <Dropdown align="end" className="d-none d-md-block">
+                    <Dropdown.Toggle
+                      variant="link"
+                      className="text-white text-decoration-none d-flex align-items-center"
+                      id="dropdown-perfil"
+                    >
+                      <img
+                        src={perfil.foto || "https://via.placeholder.com/40"}
+                        alt="Foto de perfil"
+                        className="rounded-circle me-2"
+                        width="40"
+                        height="40"
+                      />
+                      <span>{perfil.nombres} {perfil.apellidos}</span>
+                    </Dropdown.Toggle>
+
+                    <Dropdown.Menu>
+                      <Dropdown.Item onClick={handleLogout}>
+                        <i className="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                )}
+
                 {/* Opción de cerrar sesión */}
-                {isLoggedIn ? (
-                  <Nav.Link onClick={handleLogout} className={isCollapsed ? "text-black" : "text-white"}>
-                    Cerrar Sesión
-                  </Nav.Link>
-                ) : location.pathname === "/" && (
+                {!isLoggedIn && (
                   <Nav.Link onClick={() => handleNavigate("/")} className={isCollapsed ? "text-black" : "text-white"}>
                     Iniciar Sesión
                   </Nav.Link>

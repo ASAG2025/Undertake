@@ -27,6 +27,7 @@ const Talleres = () => {
   const [nuevoTaller, setNuevoTaller] = useState({
     nombre: "",
     descripcion: "",
+    categoria: "",
     videoType: "",
     video: null,
     video_url: "",
@@ -139,6 +140,7 @@ const Talleres = () => {
     const tallerData = {
       nombre: nuevoTaller.nombre,
       descripcion: nuevoTaller.descripcion,
+      categoria: nuevoTaller.categoria,
       videoType: nuevoTaller.videoType,
       video_url: videoUrl,
       id_financiera: usuarioActual.uid,
@@ -151,6 +153,7 @@ const Talleres = () => {
     setNuevoTaller({
       nombre: "",
       descripcion: "",
+      categoria:"",
       videoType: "",
       video: null,
       video_url: "",
@@ -161,7 +164,6 @@ const Talleres = () => {
     <Container className="mt-5">
       <br />
       <h4>Talleres Disponibles</h4>
-
       <div className="mb-4">
         <Button onClick={() => setShowModal(true)} className="btn btn-primary">
             <i className="bi bi-plus-circle me-2" />

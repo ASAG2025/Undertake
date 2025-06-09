@@ -1,17 +1,14 @@
 .color-navbar {
     background-color: #00B894 !important;
     background-image: linear-gradient(90deg,#0984E3 0%, #00B894 100%);
-}
+    height: 60px;
+    overflow: visible;
+    z-index: 10;
+  }
 
   
   .color-texto-marca {
     color: #005F2F !important;
-  }
-
-  .color-navbar {
-    background-color: #b18cd7; /* tu color morado */
-    height: 60px; /* ALTURA FIJA del Navbar */
-    overflow: hidden; /* oculta cualquier cosa que se pase */
   }
 
   .logo-navbar {
@@ -39,4 +36,15 @@
   z-index: 1;
 }
 
-  
+  .menu-desplegable {
+  position: fixed;
+  top: 60px;
+  right: 10px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  z-index: 1000;
+  min-width: 250px;
+  padding: 12px;
+}
+
