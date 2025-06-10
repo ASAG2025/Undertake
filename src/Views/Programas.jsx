@@ -31,7 +31,7 @@ const Programas = () => {
     deleted: [],
   });
 
-  const programasRef = collection(db, "programas_financiamiento");
+  const programasRef = collection(db, "Programas_Financiamiento");
 
   const obtenerProgramas = async () => {
     try {

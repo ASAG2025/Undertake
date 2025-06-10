@@ -339,7 +339,7 @@ const RegistroEmprendedor = ({
           </Row>
         </Form>
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer className="justify-content-center">
         <Button variant="secondary" onClick={() => setShowModal(false)}>
           Cancelar
         </Button>

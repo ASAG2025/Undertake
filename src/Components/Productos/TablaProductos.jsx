@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Table, Button, Image } from "react-bootstrap";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
-const TablaProductos = ({ productos, openEditModal, openDeleteModal }) => {
+const TablaProductos = ({ productos, openEditModal, openDeleteModal, handleCopy }) => {
   const [expandedId, setExpandedId] = useState(null);
 
   const toggleDescripcion = (id) => {

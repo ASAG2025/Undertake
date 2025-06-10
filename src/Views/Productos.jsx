@@ -1,4 +1,3 @@
-// Importaciones
 import React, { useState, useEffect } from "react";
 import { Container, Button, Col, Row } from "react-bootstrap";
 import { db } from "../Database/FirebaseConfig";

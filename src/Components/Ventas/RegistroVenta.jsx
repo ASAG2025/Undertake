@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Button, Form, Table, InputGroup } from "react-bootstrap";
 
 const RegistroVenta = ({
@@ -18,9 +18,44 @@ const RegistroVenta = ({
   const precio = productoSeleccionado ? productoSeleccionado.precio : 0;
   const subtotal = cantidad * precio;
 
+  // Estados de validación
+  const [productoValido, setProductoValido] = useState(false);
+  const [cantidadValida, setCantidadValida] = useState(false);
+  const [formValidated, setFormValidated] = useState(false);
+
+  // Funciones de validación
+  const validarProducto = (valor) => {
+    if (!valor) return "Debes seleccionar un producto.";
+    return "";
+  };
+
+  const validarCantidad = (valor) => {
+    if (!valor) return "Debes ingresar una cantidad.";
+    if (isNaN(valor) || valor <= 0)
+      return "La cantidad debe ser un número mayor a 0.";
+    return "";
+  };
+
+  // Validación general
+  const isFormValid = () => {
+    return validarProducto(idProducto) === "" && validarCantidad(cantidad) === "";
+  };
+
+  // Actualizar flags al cambiar inputs
+  useEffect(() => {
+    setProductoValido(validarProducto(idProducto) === "");
+    setCantidadValida(validarCantidad(cantidad) === "");
+  }, [idProducto, cantidad]);
+
   return (
     <Modal show={show} onHide={onHide}>
-      <Form onSubmit={handleSubmit}>
+      <Form
+        onSubmit={(e) => {
+          e.preventDefault();
+          setFormValidated(true);
+          if (isFormValid()) handleSubmit();
+        }}
+      >
         <Modal.Header closeButton>
           <Modal.Title>Registrar Venta</Modal.Title>
         </Modal.Header>
@@ -32,6 +67,7 @@ const RegistroVenta = ({
               <Form.Select
                 value={idProducto}
                 onChange={(e) => setIdProducto(e.target.value)}
+                isInvalid={formValidated && !!validarProducto(idProducto)}
               >
                 <option value="">-- Selecciona un producto --</option>
                 {productos.map((producto) => (
@@ -40,6 +76,9 @@ const RegistroVenta = ({
                   </option>
                 ))}
               </Form.Select>
+              <Form.Control.Feedback type="invalid">
+                {validarProducto(idProducto)}
+              </Form.Control.Feedback>
             </InputGroup>
           </Form.Group>
 
@@ -62,8 +101,11 @@ const RegistroVenta = ({
                     min="1"
                     value={cantidad}
                     onChange={(e) => setCantidad(e.target.value)}
-                    required
+                    isInvalid={formValidated && !!validarCantidad(cantidad)}
                   />
+                  <Form.Control.Feedback type="invalid">
+                    {validarCantidad(cantidad)}
+                  </Form.Control.Feedback>
                 </InputGroup>
               </Form.Group>
 
@@ -76,7 +118,14 @@ const RegistroVenta = ({
               </Form.Group>
 
               <div className="d-grid">
-                <Button variant="outline-primary" type="button" onClick={agregarProductoAVenta}>
+                <Button
+                  variant="outline-primary"
+                  type="button"
+                  onClick={() => {
+                    setFormValidated(true);
+                    if (isFormValid()) agregarProductoAVenta();
+                  }}
+                >
                   <i className="bi bi-cart-plus" /> Agregar a la venta
                 </Button>
               </div>
@@ -107,16 +156,18 @@ const RegistroVenta = ({
                   ))}
                 </tbody>
               </Table>
-              <div className="text-end fw-bold">Total: ${total.toFixed(2)}</div>
             </>
           )}
         </Modal.Body>
         <Modal.Footer className="justify-content-center">
           <Button variant="secondary" onClick={onHide}>
-            <i className="bi bi-x-circle" /> Cancelar
+            Cancelar
           </Button>
-          <Button type="submit" variant="primary" disabled={itemsVenta.length === 0}>
-            <i className="bi bi-save" /> Guardar
+          <Button
+            variant="primary"
+            type="submit"
+          >
+            Guardar
           </Button>
         </Modal.Footer>
       </Form>
