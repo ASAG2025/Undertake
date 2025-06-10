@@ -10,7 +10,7 @@ const HistorialVentas = () => {
 
   useEffect(() => {
     const fetchVentas = async () => {
-      const q = query(collection(db, "ventas"), where("id_emprendedor", "==", user.uid));
+      const q = query(collection(db, "VentaOnline"), where("id_emprendedor", "==", user.uid));
       const querySnapshot = await getDocs(q);
       const resultados = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setVentas(resultados);

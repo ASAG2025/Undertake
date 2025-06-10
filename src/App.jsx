@@ -14,7 +14,6 @@ import Categorias from "./Views/Categorias";
 import Programas from "./Views/Programas";
 import Negocios from "./Views/Negocios";
 import Catalogo from "./Views/Catalogo"
-
 import Estadisticas from "./Views/Estadisticas";
 import Clientes from "./Views/Clientes";
 import Ventas from "./Views/Ventas";
