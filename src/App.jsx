@@ -40,7 +40,7 @@ function App() {
                 <Route path="/Negocios" element={<ProtectedRoute element={<Negocios />} roles={["Administrador", "Emprendedor"]} />} />
                 <Route path="/Catalogo" element={<ProtectedRoute element={<Catalogo />} roles={["Administrador","Cliente", "Emprendedor", "Financiera"]} />} />
                 <Route path="/Estadisticas" element={<ProtectedRoute element={<Estadisticas />} roles={["Administrador", "Emprendedor"]} />} />
-                <Route path="/Clientes" element={<ProtectedRoute element={<Clientes />} roles={["Administrador", "Emprendedor"]} />} />
+                <Route path="/Clientes" element={<ProtectedRoute element={<Clientes />} roles={["Administrador", "Emprendedor", "Cliente"]} />} />
                 <Route path="/Ventas" element={<ProtectedRoute element={<Ventas />} roles={["Administrador", "Emprendedor"]} />} />
                 <Route path="/HistorialVentas" element={<ProtectedRoute element={<HistorialVentas />} roles={["Administrador", "Emprendedor"]} />} />
                 <Route path="/Carrito" element={<ProtectedRoute element={<Carrito />} roles={["Administrador", "Emprendedor", "Cliente"]} />} />

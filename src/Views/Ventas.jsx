@@ -239,7 +239,8 @@ const Ventas = () => {
       const generarPDFVentas = () => {
       const doc = new jsPDF();
 
-      doc.setFillColor(28, 41, 51);
+      // Encabezado con fondo gradiente (simulado con color sólido azul)
+      doc.setFillColor(9, 132, 227); // #0984E3
       doc.rect(0, 0, 220, 30, "F");
 
       doc.setTextColor(255, 255, 255);
@@ -263,7 +264,20 @@ const Ventas = () => {
         body: filas,
         startY: 40,
         theme: "grid",
-        styles: { fontSize: 10, cellPadding: 2 },
+        headStyles: {
+          fillColor: [9, 132, 227], // Azul cabecera
+          textColor: 255,
+          fontStyle: 'bold',
+          halign: 'center'
+        },
+        bodyStyles: {
+          textColor: [0, 0, 0],
+          fontSize: 10,
+          halign: 'center'
+        },
+        alternateRowStyles: {
+          fillColor: [240, 248, 255] // un azul clarito para filas alternas
+        },
         margin: { top: 20, left: 14, right: 14 },
         tableWidth: "auto",
         didDrawPage: function (data) {
@@ -271,9 +285,9 @@ const Ventas = () => {
           const anchoPagina = doc.internal.pageSize.getWidth();
           const numeroPagina = doc.internal.getNumberOfPages();
           doc.setFontSize(10);
-          doc.setTextColor(0, 0, 0);
+          doc.setTextColor(100);
           const piePagina = `Página ${numeroPagina} de ${totalPaginas}`;
-          doc.text(piePagina, anchoPagina / 2 + 15, alturaPagina - 10, { align: "center" });
+          doc.text(piePagina, anchoPagina / 2, alturaPagina - 10, { align: "center" });
         }
       });
 
@@ -290,35 +304,36 @@ const Ventas = () => {
       doc.save(nombreArchivo);
     };
 
-        const generarPDFDetalleVenta = (venta) => {
-        const pdf = new jsPDF();
+    const generarPDFDetalleVenta = (venta) => {
+      const pdf = new jsPDF();
 
-        pdf.setFillColor(28, 41, 51);
-        pdf.rect(0, 0, 220, 30, 'F');
+      // Encabezado con fondo gradiente simulado
+      pdf.setFillColor(9, 132, 227); // #0984E3
+      pdf.rect(0, 0, 220, 30, 'F');
 
-        pdf.setTextColor(255, 255, 255);
-        pdf.setFontSize(22);
-        pdf.text("Detalle de Venta", pdf.internal.pageSize.getWidth() / 2, 18, { align: "center" });
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(22);
+      pdf.text("Detalle de Venta", pdf.internal.pageSize.getWidth() / 2, 18, { align: "center" });
 
-        pdf.setTextColor(0, 0, 0);
-        pdf.setFontSize(14);
+      pdf.setTextColor(0, 0, 0);
+      pdf.setFontSize(14);
 
-        const detalles = [
-          `Producto: ${venta.nombre_producto}`,
-          `Precio Unitario: C$ ${venta.precio_producto}`,
-          `Cantidad: ${venta.cantidad}`,
-          `Subtotal: C$ ${venta.subtotal}`,
-          `Fecha: ${venta.fecha.substring(0, 10)}`,
-        ];
+      const detalles = [
+        `Producto: ${venta.nombre_producto}`,
+        `Precio Unitario: C$ ${venta.precio_producto}`,
+        `Cantidad: ${venta.cantidad}`,
+        `Subtotal: C$ ${venta.subtotal}`,
+        `Fecha: ${venta.fecha.substring(0, 10)}`,
+      ];
 
-        let y = 50;
-        detalles.forEach(texto => {
-          pdf.text(texto, 20, y);
-          y += 10;
-        });
+      let y = 50;
+      detalles.forEach(texto => {
+        pdf.text(texto, 20, y);
+        y += 12;
+      });
 
-        pdf.save(`venta_${venta.id}.pdf`);
-      };
+      pdf.save(`venta_${venta.id}.pdf`);
+    };
 
       const exportarExcelVentas = () => {
       const datos = ventasFiltradas.map((venta, index) => ({

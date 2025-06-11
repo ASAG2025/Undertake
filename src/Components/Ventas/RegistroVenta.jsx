@@ -67,7 +67,7 @@ const RegistroVenta = ({
               <Form.Select
                 value={idProducto}
                 onChange={(e) => setIdProducto(e.target.value)}
-                isInvalid={formValidated && !!validarProducto(idProducto)}
+                
               >
                 <option value="">-- Selecciona un producto --</option>
                 {productos.map((producto) => (
@@ -76,9 +76,7 @@ const RegistroVenta = ({
                   </option>
                 ))}
               </Form.Select>
-              <Form.Control.Feedback type="invalid">
-                {validarProducto(idProducto)}
-              </Form.Control.Feedback>
+              
             </InputGroup>
           </Form.Group>
 

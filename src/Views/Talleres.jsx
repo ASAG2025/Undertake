@@ -13,6 +13,14 @@ import { onAuthStateChanged } from "firebase/auth";
 import RegistroTaller from "../Components/Talleres/RegistroTaller";
 import TarjetaTaller from "../Components/Talleres/TarjetaTaller";
 
+// 📌 Función utilitaria para transformar URLs de YouTube a formato embed
+const obtenerEmbedURL = (url) => {
+  if (!url) return null;
+  const videoIdMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/);
+  const videoId = videoIdMatch ? videoIdMatch[1] : null;
+  return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+};
+
 const Talleres = () => {
   const [talleres, setTalleres] = useState([]);
   const [inscripciones, setInscripciones] = useState([]);
@@ -23,14 +31,17 @@ const Talleres = () => {
   const talleresCollection = collection(db, "Talleres");
   const inscripcionesCollection = collection(db, "InscripcionesTaller");
   const financierasCollection = collection(db, "Financieras");
+  const categoriasCollection = collection(db, "Categoria");
+
+  const [categorias, setCategorias] = useState([]);
 
   const [nuevoTaller, setNuevoTaller] = useState({
     nombre: "",
     descripcion: "",
     categoria: "",
     videoType: "",
-    video: null,
-    video_url: "",
+    videoArchivo: null,
+    videoURL: "",
   });
 
   useEffect(() => {
@@ -67,9 +78,19 @@ const Talleres = () => {
     setFinancieras(fetchedFinancieras);
   };
 
+  const fetchCategorias = async () => {
+    const data = await getDocs(categoriasCollection);
+    const fetchedCategorias = data.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    setCategorias(fetchedCategorias);
+  };
+
   useEffect(() => {
     fetchTalleres();
     fetchFinancieras();
+    fetchCategorias();
   }, []);
 
   useEffect(() => {
@@ -131,10 +152,13 @@ const Talleres = () => {
     }
 
     let videoUrl = "";
-    if (nuevoTaller.video) {
-      const storageRef = ref(storage, `talleres_videos/${Date.now()}_${nuevoTaller.video.name}`);
-      await uploadBytes(storageRef, nuevoTaller.video);
+
+    if (nuevoTaller.videoType === "Local" && nuevoTaller.videoArchivo) {
+      const storageRef = ref(storage, `talleres_videos/${Date.now()}_${nuevoTaller.videoArchivo.name}`);
+      await uploadBytes(storageRef, nuevoTaller.videoArchivo);
       videoUrl = await getDownloadURL(storageRef);
+    } else if (nuevoTaller.videoType === "YouTube") {
+      videoUrl = nuevoTaller.videoURL;
     }
 
     const tallerData = {
@@ -153,10 +177,10 @@ const Talleres = () => {
     setNuevoTaller({
       nombre: "",
       descripcion: "",
-      categoria:"",
+      categoria: "",
       videoType: "",
-      video: null,
-      video_url: "",
+      videoArchivo: null,
+      videoURL: "",
     });
   };
 
@@ -166,8 +190,8 @@ const Talleres = () => {
       <h4>Talleres Disponibles</h4>
       <div className="mb-4">
         <Button onClick={() => setShowModal(true)} className="btn btn-primary">
-            <i className="bi bi-plus-circle me-2" />
-            Agregar
+          <i className="bi bi-plus-circle me-2" />
+          Agregar
         </Button>
       </div>
 
@@ -204,6 +228,7 @@ const Talleres = () => {
         handleInputChange={handleInputChange}
         handleVideoChange={handleVideoChange}
         handleAddTaller={handleAddTaller}
+        categorias={categorias}
       />
     </Container>
   );
