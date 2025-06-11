@@ -215,13 +215,13 @@ const Emprendedores = () => {
       <br />
       <h4>Gestión de Emprendedores</h4>
       <Row>
-        <Col lg={2} md={2} sm={2} xs={3}>
+        <Col Col xs={12} sm={4} className="mb-2">
           <Button className="mb-3" onClick={() => setShowModal(true)} style={{ width: "100%" }}>
             <i className="bi bi-plus-circle me-2"></i>
             Agregar
           </Button>
         </Col>
-        <Col lg={3} md={3} sm={3} xs={5}>
+        <Col xs={12} sm={8} className="mb-2">
           <CuadroBusquedas searchText={searchText} handleSearchChange={handleSearchChange} />
         </Col>
       </Row>
