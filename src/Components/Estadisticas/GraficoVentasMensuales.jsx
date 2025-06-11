@@ -1,16 +1,20 @@
+import React from 'react';
 import { Card } from "react-bootstrap";
 import { Bar } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
 
-const GraficoProductos = ({ nombres, precios }) => {
+const GraficoVentasMensuales = ({ datos }) => {
+  const labels = datos.map((item) => item.mes);
+  const valores = datos.map((item) => item.total);
+
   const data = {
-    labels: nombres,
+    labels,
     datasets: [
       {
-        label: 'Precio (C$)',
-        data: precios,
-        backgroundColor: 'rgb(51, 29, 113)', // Color sólido
-        borderColor: 'rgb(169, 189, 204)',
+        label: 'Total de Ventas (C$)',
+        data: valores,
+        backgroundColor: 'rgb(255, 99, 132)', // Color sólido
+        borderColor: 'rgb(200, 50, 100)',
         borderWidth: 1,
       }
     ]
@@ -24,7 +28,7 @@ const GraficoProductos = ({ nombres, precios }) => {
       },
       title: {
         display: true,
-        text: 'Precios de Productos',
+        text: 'Ventas Mensuales',
       },
     },
     scales: {
@@ -32,13 +36,13 @@ const GraficoProductos = ({ nombres, precios }) => {
         beginAtZero: true,
         title: {
           display: true,
-          text: 'Precio (C$)',
+          text: 'Ventas (C$)',
         },
       },
       x: {
         title: {
           display: true,
-          text: 'Productos',
+          text: 'Mes',
         },
       },
     },
@@ -48,7 +52,7 @@ const GraficoProductos = ({ nombres, precios }) => {
     <div style={{ width: "100%", height: "400px" }}>
       <Card>
         <Card.Body>
-          <Card.Title>Gráfico Productos</Card.Title>
+          <Card.Title>Gráfico de Ventas</Card.Title>
           <Bar data={data} options={options} />
         </Card.Body>
       </Card>
@@ -56,4 +60,4 @@ const GraficoProductos = ({ nombres, precios }) => {
   );
 };
 
-export default GraficoProductos;
+export default GraficoVentasMensuales;
